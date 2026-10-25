@@ -475,12 +475,9 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
 
       <label>Reason</label>
       <div class="reason-table">
-        <div class="reason-row reason-head"><span>Isian</span><span>TF</span></div>
-        <div class="reason-row"><input type="text" class="isian" data-i="1" placeholder="Isian 1"><select class="tf" data-i="1"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
-        <div class="reason-row"><input type="text" class="isian" data-i="2" placeholder="Isian 2"><select class="tf" data-i="2"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
-        <div class="reason-row"><input type="text" class="isian" data-i="3" placeholder="Isian 3"><select class="tf" data-i="3"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
-        <div class="reason-row"><input type="text" class="isian" data-i="4" placeholder="Isian 4"><select class="tf" data-i="4"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
-        <div class="reason-row"><input type="text" class="isian" data-i="5" placeholder="Isian 5"><select class="tf" data-i="5"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
+        <div class="reason-row reason-head"><span>Setup</span><span>TF</span></div>
+        <div class="reason-row"><select id="reasonSel" onchange="syncReasonOther()" style="border-right:1px solid var(--border2)"><option value="">- Pilih -</option><option value="OB #1">OB #1</option><option value="OB #2">OB #2</option><option value="OB #3">OB #3</option><option value="Fvg">Fvg</option><option value="Ifvg">Ifvg</option><option value="Bpr">Bpr</option><option value="__other">Lainnya (ketik)</option></select><select class="tf" id="reasonTf"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
+        <div class="reason-row" id="reasonOtherRow" style="display:none;grid-template-columns:1fr"><input type="text" id="reasonOther" placeholder="Ketik reason sendiri…" autocomplete="off" style="border-right:0"></div>
       </div>
       <label>Evaluasi</label><textarea id="evaluation" placeholder="Evaluasi setelah trade..."></textarea>
       <label>Link TradingView</label><input type="url" id="tv" placeholder="https://www.tradingview.com/x/xxxxx">
@@ -545,11 +542,10 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
       <div class="card">
         <div class="period-tabs" id="sigFilter">
           <button data-s="all" class="active">Semua</button>
-          <button data-s="active">Active</button>
+          <button data-s="active">Valid</button>
           <button data-s="tp">Hit TP</button>
           <button data-s="sl">Hit SL</button>
-          <button data-s="be">BE</button>
-          <button data-s="closed">Closed</button>
+          <button data-s="closed">Invalid</button>
         </div>
         <div class="sig-updated" id="sigUpdated"></div>
         <div id="signalList"><div class="empty-note">Memuat signal…</div></div>
@@ -631,17 +627,14 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
       <button type="button" class="op-btn active" data-op="Buy" onclick="setSigOp('Buy')">BUY</button>
       <button type="button" class="op-btn" data-op="Sell" onclick="setSigOp('Sell')">SELL</button>
     </div>
-    <div class="two-col">
-      <div><label>Entry</label><input type="number" id="sigEntry" step="0.00001" inputmode="decimal" placeholder="2415.50"></div>
-      <div><label>Timeframe</label><input type="text" id="sigTf" placeholder="H1" autocomplete="off"></div>
-    </div>
+    <label>Entry</label><input type="number" id="sigEntry" step="0.00001" inputmode="decimal" placeholder="2415.50">
     <label>Stop Loss</label><input type="number" id="sigSl" step="0.00001" inputmode="decimal" placeholder="2405.50">
     <div class="three-col">
       <div><label>TP 1</label><input type="number" id="sigTp1" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
       <div><label>TP 2</label><input type="number" id="sigTp2" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
       <div><label>TP 3</label><input type="number" id="sigTp3" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
     </div>
-    <label>Catatan</label><textarea id="sigNote" placeholder="Analisa singkat, rencana, catatan risiko..."></textarea>
+    <label>Reason</label><textarea id="sigNote" placeholder="Alasan entry / setup, rencana, catatan risiko..."></textarea>
     <div class="auth-error" id="sigError"></div>
     <div class="modal-actions">
       <button type="button" class="btn ghost" id="sigDeleteBtn" onclick="deleteSignal()">Hapus</button>
@@ -1396,8 +1389,10 @@ function resetForm(){
   setOp('Buy');
   $('sl').value=50;
   $('sesi').value='';$('tipe').value='';$('emosi').value='';
-  document.querySelectorAll('.isian').forEach(i=>i.value='');
+  if($('reasonSel')) $('reasonSel').value='';
   document.querySelectorAll('.tf').forEach(s=>s.value='');
+  if($('reasonOther')) $('reasonOther').value='';
+  if($('reasonOtherRow')) $('reasonOtherRow').style.display='none';
   document.querySelectorAll('.entry-check').forEach((c,idx)=>{c.checked=idx===0;});
   document.querySelectorAll('.entry-body').forEach((b,idx)=>{b.classList.toggle('hidden',idx!==0);});
   document.querySelectorAll('.entry-outcome').forEach(s=>s.value='tp');
@@ -1538,7 +1533,13 @@ $('tradeForm').addEventListener('submit',e=>{
       lot:parseFloat(document.querySelector(`.entry-lot[data-i="${i}"]`).value)||0
     })),
     total,
-    reasons:[1,2,3,4,5].map(i=>({isian:document.querySelector(`.isian[data-i="${i}"]`).value.trim(),tf:document.querySelector(`.tf[data-i="${i}"]`).value})).filter(r=>r.isian||r.tf),
+    reasons:(()=>{
+      const sel=($('reasonSel')||{}).value||'';
+      const lain=(($('reasonOther')||{}).value||'').trim();
+      const tf=($('reasonTf')||{}).value||'';
+      const isian=sel==='__other'?lain:sel;
+      return (isian||tf)?[{isian:isian,tf:tf}]:[];
+    })(),
     evaluation:$('evaluation').value.trim(),
     tv:$('tv').value.trim(),
     plan:$('plan').value
@@ -1784,11 +1785,18 @@ function editTrade(id){
     const lot=document.querySelector(`.entry-lot[data-i="${i}"]`);lot.value=(o.lot==null?0.01:o.lot);
     updateCalc(i);
   });
-  [1,2,3,4,5].forEach(i=>{
-    const r=(t.reasons||[])[i-1]||{};
-    document.querySelector(`.isian[data-i="${i}"]`).value=r.isian||'';
-    document.querySelector(`.tf[data-i="${i}"]`).value=r.tf||'';
-  });
+  (()=>{
+    const r=(t.reasons||[])[0]||{};
+    const preset=['OB #1','OB #2','OB #3','Fvg','Ifvg','Bpr'];
+    const isian=String(r.isian||'');
+    if($('reasonSel')){
+      if(preset.indexOf(isian)>=0){ $('reasonSel').value=isian; $('reasonOther').value=''; }
+      else if(isian){ $('reasonSel').value='__other'; $('reasonOther').value=isian; }
+      else { $('reasonSel').value=''; $('reasonOther').value=''; }
+      if($('reasonTf')) $('reasonTf').value=r.tf||'';
+      syncReasonOther();
+    }
+  })();
   $('evaluation').value=t.evaluation||'';$('tv').value=t.tv||'';
 }
 ['fMode','fText','fPsi','fFrom','fTo'].forEach(id=>$(id).addEventListener('input',renderHistory));
@@ -2080,6 +2088,14 @@ window.resetJournal=function(){selectedDate=null;viewDate=new Date();sumOff=0;ed
 
 /* --- jembatan ke fitur signal / komunitas --- */
 window.setJournalData=function(tr,cf){trades=Array.isArray(tr)?tr:[];cashflows=Array.isArray(cf)?cf:[];};
+window.syncReasonOther=function(){
+  const sel=$('reasonSel'), row=$('reasonOtherRow');
+  if(!sel||!row) return;
+  const on=sel.value==='__other';
+  row.style.display=on?'grid':'none';
+  if(on&&$('reasonOther')) setTimeout(()=>{ try{$('reasonOther').focus();}catch(e){} },50);
+};
+
 window.journalFromSignal=function(sig){
   if(typeof go==='function') go('journal');
   openModal();
@@ -2102,7 +2118,6 @@ window.journalFromSignal=function(sig){
     sel.value='tp';sel.dispatchEvent(new Event('change',{bubbles:true}));
   }
   $('sesi').value=autoSesi($('datetime').value);
-  if(sig.timeframe) $('tv').value=$('tv').value;
   [1,2,3].forEach(updateCalc);
   refreshWarn();
   toast('Signal dimasukkan ke form jurnal. Lengkapi lalu simpan.');
@@ -2118,7 +2133,7 @@ let sigOp = 'Buy';
 let editingSignalId = null;
 let MY_CODES = [];
 
-const STATUS_LABEL = { active: 'ACTIVE', tp: 'HIT TP', sl: 'HIT SL', be: 'BE', closed: 'CLOSED' };
+const STATUS_LABEL = { active: 'VALID', tp: 'HIT TP', sl: 'HIT SL', closed: 'INVALID', be: 'INVALID' };
 
 function relTime(ts) {
   const s = Math.floor((Date.now() - ts) / 1000);
@@ -2218,7 +2233,7 @@ function renderSignals() {
 function sigCard(s) {
   const pair = esc((s.pair || '').toUpperCase());
   const buy = s.side !== 'Sell';
-  const status = STATUS_LABEL[s.status] || 'ACTIVE';
+  const status = STATUS_LABEL[s.status] || 'VALID';
   const lv = [
     `<div class="lvl">ENTRY<b>${fmtNum(s.entry)}</b><small></small></div>`,
     `<div class="lvl sl">SL<b>${fmtNum(s.sl)}</b><small>${pipsBetween(s.pair, s.entry, s.sl) != null ? pipsBetween(s.pair, s.entry, s.sl).toFixed(1) + ' p' : ''}</small></div>`,
@@ -2235,9 +2250,8 @@ function sigCard(s) {
       <button class="chip ${res === 'TP2' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','tp','TP2')">TP 2</button>
       <button class="chip ${res === 'TP3' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','tp','TP3')">TP 3</button>
       <button class="chip ${s.status === 'sl' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','sl','SL')">SL</button>
-      <button class="chip ${s.status === 'be' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','be','BE')">BE</button>
-      <button class="chip ${s.status === 'closed' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','closed','Closed')">Tutup</button>
-      ${s.status !== 'active' ? `<button class="chip ghost" onclick="setSignalStatus('${s.id}','active','')">Aktifkan lagi</button>` : ''}
+      <button class="chip ${s.status === 'closed' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','closed','Invalid')">Invalid</button>
+      ${s.status !== 'active' ? `<button class="chip ghost" onclick="setSignalStatus('${s.id}','active','')">Jadikan Valid</button>` : ''}
       <button class="chip ghost" onclick="editSignal('${s.id}')">✎ Edit</button>
       <button class="chip danger" onclick="removeSignal('${s.id}')">✕</button>
     </div>`;
@@ -2294,7 +2308,6 @@ function openSignalModal(id) {
   $('sigTp1').value = s && s.tp1 != null ? s.tp1 : '';
   $('sigTp2').value = s && s.tp2 != null ? s.tp2 : '';
   $('sigTp3').value = s && s.tp3 != null ? s.tp3 : '';
-  $('sigTf').value = s ? (s.timeframe || '') : '';
   $('sigNote').value = s ? (s.note || '') : '';
   setSigOp(s ? (s.side === 'Sell' ? 'Sell' : 'Buy') : 'Buy');
   if (s && s.codeId) pick.value = s.codeId;
@@ -2308,7 +2321,7 @@ async function submitSignal() {
   const num = v => { const x = $('sig' + v).value; return x === '' ? null : Number(x); };
   const payload = {
     pair, side: sigOp, entry: num('Entry'), sl: num('Sl'), tp1: num('Tp1'), tp2: num('Tp2'), tp3: num('Tp3'),
-    timeframe: ($('sigTf').value || '').trim(), note: ($('sigNote').value || '').trim()
+    note: ($('sigNote').value || '').trim()
   };
   if (editingSignalId) payload.id = editingSignalId;
   if (!editingSignalId && MY_CODES && MY_CODES.length) payload.codeId = $('sigCodePick').value;
@@ -2483,5 +2496,5 @@ async function leaveCode() {
 
 </script>
 <script>boot();</script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4ffd8ed18bb5c61',t:'MTc5MjkxNjkwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
