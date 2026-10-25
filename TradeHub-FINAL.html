@@ -1,0 +1,2487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TradeHub — Komunitas Trading</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000'/%3E%3Cpath d='M12 42l12-14 10 8 18-22' stroke='%23fff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000'/%3E%3Cpath d='M12 42l12-14 10 8 18-22' stroke='%23fff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TradeHub">
+<script>try{if(localStorage.getItem("thTheme")==="light")document.documentElement.dataset.theme="light"}catch(e){}</script>
+<style>
+/* css/journal.css */
+:root{--bg:#000;--card:#0a0a0a;--card2:#050505;--card3:#0f0f0f;--border:#2a2a2a;--border2:#1c1c1c;--fg:#fff;--text:#fff;--muted:#8a8a8a;--muted2:#5c5c5c;--red:#ff6b6b;--green:#7ee787;color-scheme:dark}
+:root[data-theme=light]{--bg:#fff;--card:#f5f5f5;--card2:#fff;--card3:#ececec;--border:#c9c9c9;--border2:#e0e0e0;--fg:#111;--text:#111;--muted:#5a5a5a;--muted2:#8c8c8c;--red:#c62828;--green:#1b7f3a;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.mono{font-family:'SFMono-Regular',Consolas,'Courier New',monospace}
+.wrap{max-width:520px;margin:0 auto;padding:20px 16px 110px}
+h1{font-size:30px;margin:0 0 22px;font-weight:700;letter-spacing:4px;text-transform:uppercase;text-align:center;position:relative;padding-bottom:16px}
+h1::after{content:'';position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:40px;height:2px;background:linear-gradient(90deg,transparent,var(--fg),transparent)}
+#appMain{display:none}
+#accountBtn{display:none}
+.gear-btn{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:16px;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--fg);font-size:17px;cursor:pointer;z-index:30;padding:0;align-items:center;justify-content:center;line-height:1}
+.profile-dot{width:7px;height:7px;border-radius:50%;background:var(--fg)}
+.profile-chevron{color:var(--muted);font-size:12px;margin-left:2px}
+.profile-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.profile-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;border:1px solid var(--border);cursor:pointer}
+.profile-row.active{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.profile-row .pname{flex:1;font-weight:700;font-size:14px}
+.profile-row .pcount{font-size:11px;color:var(--muted)}
+.profile-row.active .pcount{color:#555}
+.profile-row .pdel{width:24px;height:24px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;flex-shrink:0}
+.profile-row.active .pdel{border-color:var(--bg);color:var(--bg)}
+.profile-add{display:flex;gap:8px;margin-top:14px}
+.profile-add input{flex:1}
+.auth-screen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-box{width:100%;max-width:360px}
+.auth-title{font-size:26px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-align:center;margin:0 0 6px}
+.auth-sub{color:var(--muted);font-size:13px;text-align:center;margin:0 0 20px}
+.type-btn{flex:1;padding:12px 0;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--fg);font-weight:800;font-size:13px;cursor:pointer}
+.type-btn.active{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.auth-error{display:none;color:var(--fg);font-size:12px;margin-top:10px;border:1px dashed var(--border);border-radius:10px;padding:8px 12px}
+.auth-error.show{display:block}
+.auth-switch{text-align:center;font-size:12px;color:var(--muted);margin-top:16px}
+.auth-switch a{color:var(--fg);text-decoration:underline;cursor:pointer;font-weight:700}
+.account-info{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:4px}
+.info-row{display:flex;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border2);font-size:13px}
+.info-row:first-child{border-top:0}
+.info-row span{color:var(--muted)}
+.info-row b{font-family:monospace}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px}
+.period-tabs{display:flex;gap:6px;margin-bottom:12px}
+.period-tabs button{flex:1;padding:8px 0;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer}
+.period-tabs button.active{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chart-total{font-size:13px;color:var(--muted);margin-top:8px;text-align:right}
+.chart-total.hasval{color:var(--fg);font-weight:700}
+svg#progressChart{width:100%;height:110px;display:block}
+.stat-row{display:flex;align-items:center;gap:16px}
+.donut-wrap{position:relative;width:92px;height:92px;flex-shrink:0}
+.donut-wrap svg{transform:rotate(-90deg)}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-center b{font-size:19px;font-family:'SFMono-Regular',Consolas,monospace}
+.donut-center span{font-size:9px;color:var(--muted);letter-spacing:1px}
+.stat-divider{width:1px;align-self:stretch;background:var(--border)}
+.balance-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid var(--border2)}
+.balance-row .lbl{font-size:12px;color:var(--muted)}
+.balance-row .num{font-size:19px;font-weight:800}
+.stat-col{flex:1;min-width:0}
+.stat-col .num{font-size:21px;font-weight:800;font-family:monospace}
+.stat-col .num.pnl-num{font-size:16px;line-height:1.25;word-break:break-word}
+.stat-col .lbl{font-size:11px;color:var(--muted);margin-top:2px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-head h2{margin:0;font-size:16px;font-weight:700}
+.cal-nav{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--fg);cursor:pointer;font-size:16px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-dow{text-align:center;font-size:11px;color:var(--muted);padding:4px 0}
+.cal-day{aspect-ratio:1;border:1px solid var(--border2);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;cursor:pointer;gap:2px}
+.cal-day.empty{border:0;cursor:default}
+.cal-day.today{border-color:var(--fg)}
+.cal-day.selected{background:var(--fg);color:var(--bg)}
+.cal-day .pip{font-size:9px;border:1px dashed var(--muted2);border-radius:8px;padding:1px 5px;font-family:monospace}
+.cal-day.selected .pip{border-color:var(--bg)}
+.hist-title{font-size:11px;letter-spacing:1px;color:var(--muted);margin-bottom:12px;text-transform:uppercase}
+.trade-card{border:1px dashed var(--border);border-radius:16px;padding:14px;margin-bottom:10px}
+.trade-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.trade-id{display:flex;align-items:center;gap:8px;min-width:0}
+.pair-name{font-weight:800;font-size:15px;text-transform:uppercase}
+.op-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;flex-shrink:0}
+.op-pill.buy{background:var(--fg);color:var(--bg)}
+.op-pill.sell{background:transparent;color:var(--fg);border:1px solid var(--fg)}
+.del-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;flex-shrink:0}
+.trade-meta{font-size:12px;color:var(--muted);margin-top:6px;font-family:monospace}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{font-size:11px;border:1px solid var(--border);border-radius:20px;padding:3px 10px;color:var(--muted)}
+.entry-line{font-size:12px;border:1px solid var(--border2);border-radius:8px;padding:6px 10px;margin-top:8px;font-family:monospace;color:var(--muted)}
+.entry-line b{color:var(--fg)}
+.total-line{font-weight:800;margin-top:10px;font-family:monospace}
+.field-line{font-size:13px;margin-top:8px}
+.field-line b{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.tv-link{font-size:13px;color:var(--fg);text-decoration:none;border-bottom:1px dashed var(--fg);display:inline-block;margin-top:8px}
+.empty-note{color:var(--muted);font-size:13px}
+.fab{position:fixed;right:18px;bottom:22px;background:var(--fg);color:var(--bg);border:0;border-radius:30px;padding:14px 22px;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 4px 20px rgba(255,255,255,.15);z-index:20}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.overlay.open{display:flex}
+.modal{background:var(--card2);border:1px solid var(--border);border-top-left-radius:26px;border-top-right-radius:26px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;padding:22px 18px 30px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal-head h2{margin:0;font-size:20px;font-weight:800}
+.close-x{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--fg);font-size:16px;cursor:pointer}
+label{display:block;font-size:12px;color:var(--muted);margin:14px 0 6px;font-weight:600}
+.two-col{display:grid;grid-template-columns:2fr 1fr;gap:10px;align-items:start}
+.reason-table{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:6px}
+.reason-row{display:grid;grid-template-columns:2fr 1fr;gap:0;border-top:1px solid var(--border2)}
+.reason-row:first-child{border-top:0}
+.reason-row.reason-head{background:var(--card3)}
+.reason-row.reason-head span{padding:8px 12px;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.reason-row input,.reason-row select{border:0;border-radius:0;background:transparent;padding:11px 12px;font-size:13px}
+.reason-row input{border-right:1px solid var(--border2)}
+.reason-row input:focus,.reason-row select:focus{outline:none;background:var(--card3)}
+.reason-view{font-size:13px;margin-top:4px;color:var(--fg)}
+.reason-view:first-child{margin-top:0}
+input,select,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);font-size:14px;font-family:inherit}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--fg)}
+textarea{min-height:70px;resize:vertical}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:13px 0;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--fg);font-weight:800;font-size:14px;cursor:pointer}
+.seg button.active{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.entry-box{border:1px dashed var(--border);border-radius:14px;padding:12px 14px;margin-top:12px}
+.entry-head{display:flex;align-items:center;gap:10px;margin:0;cursor:pointer}
+.entry-head input{width:20px;height:20px;accent-color:var(--fg);flex-shrink:0}
+.entry-head span{font-weight:700;font-size:14px}
+.entry-body{margin-top:4px}
+.entry-body.hidden{display:none}
+.calc-text{font-size:12px;color:var(--muted);margin-top:8px}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.lot-stepper{display:flex;align-items:stretch;gap:8px}
+.lot-stepper input{text-align:center;font-family:monospace;font-size:16px;font-weight:700;-moz-appearance:textfield;appearance:textfield}
+.lot-stepper input::-webkit-outer-spin-button,.lot-stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.lot-btn{flex:0 0 52px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--fg);font-size:20px;font-weight:800;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.lot-btn{-webkit-tap-highlight-color:transparent;outline:none}
+.lot-btn:active{background:var(--fg);color:var(--bg)}
+.entry-row{display:flex;gap:8px;align-items:flex-start}
+.hasil-col{flex:1.15;min-width:0}
+.lot-col{flex:1;min-width:0}
+.entry-row select{padding:11px 8px;font-size:13px}
+.lot-stepper{gap:4px}
+.lot-stepper input{padding:11px 2px;font-size:14px;min-width:0}
+.lot-btn{flex:0 0 32px;font-size:16px;border-radius:10px}
+.day-line{font-size:12px;color:var(--muted);margin-top:10px;font-family:monospace}
+.day-line.warn{color:var(--red)}.day-line.ok{color:var(--green)}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.stat-tile{border:1px solid var(--border2);border-radius:12px;padding:10px 12px}
+.stat-tile b{display:block;font-family:monospace;font-size:16px}.stat-tile span{font-size:11px;color:var(--muted)}
+.g-row{display:grid;grid-template-columns:1.4fr .6fr .7fr 1.1fr;gap:6px;font-size:12px;font-family:monospace;padding:8px 0;border-top:1px solid var(--border2)}
+.g-row.head{color:var(--muted);font-size:10px;text-transform:uppercase;border-top:0}
+.filter-row{display:flex;gap:6px;margin-bottom:12px}
+.filter-row select,.filter-row input{padding:9px 8px;font-size:12px;min-width:0}
+.bk-row{display:flex;gap:8px;margin-top:8px}.bk-row .btn{padding:11px 0;font-size:13px}
+.mini-tag{display:inline-block;font-size:11px;border:1px solid var(--border);border-radius:8px;padding:2px 8px;margin:6px 6px 0 0;color:var(--muted)}
+.btn{flex:1;padding:14px 0;border-radius:14px;border:1px solid var(--border);font-weight:800;font-size:14px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--fg)}
+.btn.solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.hidden{display:none}
+.mini-btn{margin-top:12px;padding:10px 0;font-size:13px;width:100%;flex:none}
+.sum-nav{display:flex;align-items:center;justify-content:space-between;margin:10px 0 12px}
+.sum-nav b{font-size:13px}
+.sum-line{font-size:13px;margin-top:8px;line-height:1.5}
+.sum-line b{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.sum-headline{font-size:14px;line-height:1.5;border:1px solid var(--border2);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+.risk-box{border:1px solid var(--border2);border-radius:12px;padding:10px 12px;margin-top:12px}
+.risk-row{display:flex;gap:8px;align-items:center}
+.risk-row input{min-width:0}
+.risk-out{font-size:12px;font-family:monospace;margin-top:8px;line-height:1.5;color:var(--muted)}
+.risk-out b{color:var(--fg)}
+.risk-out.warn,.risk-out.warn b{color:var(--red)}
+.cf-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;padding:9px 0;border-top:1px solid var(--border2)}
+.cf-row small{display:block;color:var(--muted);font-size:11px}
+.cf-row .dep{color:var(--green)}.cf-row .wd{color:var(--red)}
+@media(max-width:380px){.stat-row{gap:10px}.stat-col .num{font-size:18px}}
+
+.theme-btn{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:16px;width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--fg);font-size:17px;cursor:pointer;z-index:30;padding:0;line-height:1}
+.wrap{padding-bottom:calc(130px + env(safe-area-inset-bottom,0px))}
+.fab{bottom:calc(22px + env(safe-area-inset-bottom,0px));transition:transform .25s,opacity .25s}
+.fab.fab-hide{transform:translateY(calc(100% + 40px));opacity:0;pointer-events:none}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 14px;border-radius:14px;font-size:13px;display:none;align-items:center;gap:12px;z-index:200;max-width:92vw}
+.toast.show{display:flex}
+.toast button{background:none;border:0;color:inherit;font-weight:800;text-decoration:underline;font-size:13px;cursor:pointer;padding:0}
+svg#progressChart{height:auto;aspect-ratio:340/150;touch-action:pan-y}
+.chart-tip{font-size:12px;font-family:monospace;color:var(--muted);min-height:16px;margin-top:6px}
+.chart-tip.on{color:var(--fg)}
+@media(min-width:760px){.wrap{max-width:1000px}#appMain{column-count:2;column-gap:16px}#appMain .card{break-inside:avoid}.overlay{align-items:center}.modal{border-radius:26px;max-height:90vh}}
+@media(max-width:430px){h1{font-size:24px;letter-spacing:3px}}
+
+</style>
+<style>
+/* css/app.css */
+/* ===== TradeHub — shell, sinyal, komunitas (hitam & putih) ===== */
+*{box-sizing:border-box}
+body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
+
+/* --- topbar --- */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:60;background:var(--bg);border-bottom:1px solid var(--border)}
+.tb-inner{max-width:1000px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-weight:800;letter-spacing:3px;font-size:16px;display:flex;align-items:center;gap:8px}
+.brand-mark{font-size:14px;display:inline-block;transform:translateY(-1px)}
+.tb-right{display:flex;align-items:center;gap:8px}
+.role-badge{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;border:1px solid var(--border);border-radius:20px;padding:4px 10px;color:var(--muted)}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--card);color:var(--fg);font-size:16px;cursor:pointer;padding:0;line-height:1}
+.tabs{display:flex;gap:6px;max-width:1000px;margin:0 auto;padding:0 16px 10px}
+.tab{flex:1;padding:10px 0;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-weight:700;font-size:13px;cursor:pointer}
+.tab.active{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+/* --- halaman --- */
+.page{display:none}
+.page.active{display:block}
+.gear-btn{display:none!important}
+
+/* --- auth --- */
+.auth-screen{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.auth-box{width:100%;max-width:380px}
+.auth-seg{margin-bottom:18px}
+.role-hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+.role-hint.warn{color:var(--red)}
+
+/* --- kartu signal --- */
+.sig-card{border:1px dashed var(--border);border-radius:16px;padding:14px;margin-bottom:12px}
+.sig-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sig-id{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.sig-status{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:20px;padding:4px 10px;flex-shrink:0}
+.st-active{background:var(--fg);color:var(--bg)}
+.st-tp,.st-be{background:transparent;color:var(--fg);border:1px solid var(--fg)}
+.st-sl,.st-closed{background:transparent;color:var(--muted);border:1px dashed var(--border)}
+.sig-meta{font-size:12px;color:var(--muted);margin-top:6px;font-family:'SFMono-Regular',Consolas,monospace}
+.sig-levels{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.lvl{border:1px solid var(--border2);border-radius:10px;padding:7px 10px;font-size:11px;color:var(--muted);font-family:'SFMono-Regular',Consolas,monospace}
+.lvl b{display:block;font-size:14px;color:var(--fg);font-weight:800;margin-top:2px}
+.lvl small{color:var(--muted2)}
+.lvl.sl b{color:var(--red)}
+.lvl.tp b{color:var(--green)}
+.sig-note{font-size:13px;margin-top:10px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.sig-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{padding:7px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--fg);font-size:12px;font-weight:700;cursor:pointer}
+.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip.ghost{color:var(--muted)}
+.chip.danger{color:var(--red);border-color:var(--red)}
+.sig-tools{display:flex;gap:6px;flex-shrink:0}
+.sig-updated{font-size:11px;color:var(--muted2);margin-bottom:10px;font-family:monospace}
+.badge-new{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--fg);margin-left:6px;vertical-align:middle}
+
+/* --- komunitas --- */
+.code-card{border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px}
+.code-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.code-name{font-weight:800;font-size:14px}
+.code-state{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;border-radius:20px;padding:3px 9px;border:1px solid var(--border);color:var(--muted)}
+.code-state.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.code-value{font-family:'SFMono-Regular',Consolas,monospace;font-size:22px;font-weight:800;letter-spacing:3px;margin:12px 0 4px;word-break:break-all;cursor:pointer}
+.code-sub{font-size:11px;color:var(--muted)}
+.member-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;padding:8px 0;border-top:1px solid var(--border2)}
+.member-row .who{font-weight:700}
+.member-row small{display:block;color:var(--muted);font-size:11px;font-weight:400}
+.join-row{display:flex;gap:8px;margin-top:10px}
+.join-row input{flex:1;text-transform:uppercase;letter-spacing:2px;font-family:monospace}
+
+/* --- modal tambahan --- */
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:start}
+.three-col input{padding:11px 8px;font-size:13px;font-family:monospace}
+#sigCodePickWrap.hidden{display:none}
+.empty-note{color:var(--muted);font-size:13px}
+.center{text-align:center}
+
+@media(min-width:760px){
+  .wrap{max-width:1000px}
+  .sig-levels{grid-template-columns:repeat(4,1fr)}
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar" id="topbar">
+  <div class="tb-inner">
+    <div class="brand"><span class="brand-mark">◤</span> TRADEHUB</div>
+    <div class="tb-right">
+      <span class="role-badge" id="roleBadge">-</span>
+      <button class="icon-btn" id="themeBtn" aria-label="Ganti tema" onclick="cycleTheme()">☀</button>
+      <button class="icon-btn" id="akunBtn" aria-label="Akun" onclick="openAkunModal()">⚙</button>
+    </div>
+  </div>
+  <nav class="tabs" id="mainTabs">
+    <button class="tab active" data-page="journal" onclick="go('journal')">Jurnal</button>
+    <button class="tab" data-page="signals" onclick="go('signals')">Signal</button>
+    <button class="tab" data-page="community" onclick="go('community')">Komunitas</button>
+  </nav>
+</header>
+
+<main id="pages">
+
+  <!-- ============ JURNAL ============ -->
+  <section class="page active" id="pageJournal">
+    <div class="wrap">
+  <h1>Jurnal Trade</h1>
+  <button class="gear-btn" id="accountBtn" onclick="openAkunModal()" aria-label="Pengaturan">⚙</button>
+
+  <div id="appMain">
+  <div class="card">
+    <div class="period-tabs unit" id="unitTabs"><button data-u="pips" class="active">Pips</button><button data-u="money">Nominal</button><button data-u="bal">Balance</button></div>
+    <div class="period-tabs">
+      <button data-p="day">1 Hari</button>
+      <button data-p="week">1 Minggu</button>
+      <button data-p="month" class="active">1 Bulan</button>
+      <button data-p="year">1 Tahun</button>
+    </div>
+    <svg id="progressChart" viewBox="0 0 340 150"></svg>
+    <div class="chart-tip" id="chartTip"></div><div class="chart-total" id="chartTotal">Belum ada trade pada periode ini</div>
+  </div>
+
+  <div class="card">
+    <div class="stat-row">
+      <div class="donut-wrap">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" style="stroke:var(--border2)" stroke-width="10"/>
+          <circle id="donutFg" cx="50" cy="50" r="42" fill="none" style="stroke:var(--fg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+        </svg>
+        <div class="donut-center"><b id="winratePct">0%</b><span>WINRATE</span></div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-col">
+        <div class="num" id="winCount">0/0</div>
+        <div class="lbl">menang / total trade</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-col">
+        <div class="num pnl-num" id="monthPips">¢0(0pips)</div>
+        <div class="lbl">PnL bulan ini</div>
+      </div>
+    </div>
+    <div class="balance-row">
+      <span class="lbl">Balance Akun</span>
+      <span class="num mono" id="balanceValue">-</span>
+    </div>
+    <div class="day-line" id="dayLine"></div>
+    <button type="button" class="btn ghost mini-btn" onclick="openCfModal()">Setor / Tarik Dana</button>
+  </div>
+
+  <div class="card" id="riskCard">
+    <div class="hist-title">Kalkulator Risiko</div>
+    <div class="risk-row"><input type="number" id="calcRisk" min="0" step="any" inputmode="decimal" placeholder="Risiko %"><input type="number" id="calcSl" min="0" step="1" inputmode="decimal" placeholder="SL (pips)" value="50"></div>
+    <div class="risk-out" id="riskOut"></div>
+  </div>
+
+  <div class="card">
+    <div class="cal-head">
+      <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+      <h2 id="monthTitle"></h2>
+      <button class="cal-nav" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <div class="card" id="historyCard">
+    <div class="hist-title" id="histTitle">Riwayat</div>
+    <div class="filter-row"><select id="fMode"><option value="day">Tanggal dipilih</option><option value="all">Semua</option></select><input id="fText" placeholder="Cari pair"><select id="fPsi"><option value="">Psikologi</option><option>Tenang</option><option>Takut</option><option>Percaya diri</option><option>Fomo</option><option>Revenge</option><option>Overconfidence</option><option>Frustrasi</option></select></div>
+    <div class="filter-row"><input type="date" id="fFrom" aria-label="Dari tanggal"><input type="date" id="fTo" aria-label="Sampai tanggal"><button type="button" class="btn ghost" id="fClear" style="flex:none;padding:9px 12px;font-size:12px">Reset</button></div>
+    <div id="histList"><div class="empty-note">Klik tanggal pada kalender untuk melihat riwayat.</div></div>
+  </div>
+
+  <div class="card" id="sumCard">
+    <div class="hist-title">Ringkasan</div>
+    <div class="period-tabs unit" id="sumTabs"><button data-m="week" class="active">Mingguan</button><button data-m="month">Bulanan</button></div>
+    <div class="sum-nav"><button class="cal-nav" onclick="sumMove(-1)">‹</button><b id="sumLabel"></b><button class="cal-nav" onclick="sumMove(1)">›</button></div>
+    <div id="sumBody"></div>
+  </div>
+
+  <div class="card" id="statsCard">
+    <div class="hist-title">Statistik (semua trade)</div>
+    <div class="stat-grid" id="statGrid"></div>
+    <div class="hist-title">Analisis per</div>
+    <select id="gBy"><option value="emosi">Psikologi</option><option value="sesi">Sesi</option><option value="tipe">Tipe</option><option value="pair">Pair</option><option value="plan">Ikut Plan</option><option value="op">Buy / Sell</option></select>
+    <div id="groupTable" style="margin-top:10px"></div>
+  </div>
+
+  </div>
+</div>
+
+<button class="fab" onclick="openModal()">+ Tambah Trade</button>
+<div class="toast" id="toast" role="status"><span id="toastMsg"></span><button type="button" id="toastBtn"></button></div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head"><h2 id="modalTitle">Tambah Trade</h2><button type="button" class="close-x" onclick="closeModal()">✕</button></div>
+    <form id="tradeForm">
+      <label>Pair</label><input id="pair" placeholder="XAUUSD" required>
+      <label>Tanggal & Waktu</label><input type="datetime-local" id="datetime" required>
+      <label>Open Posisi</label>
+      <div class="seg">
+        <button type="button" class="op-btn active" data-op="Buy" onclick="setOp('Buy')">BUY</button>
+        <button type="button" class="op-btn" data-op="Sell" onclick="setOp('Sell')">SELL</button>
+      </div>
+      <label>Harga Entry</label><input type="number" id="entryPoint" step="0.00001" placeholder="2415.50" required>
+      <label>SL (pips)</label><input type="number" id="sl" min="0" step="1" value="50" required>
+
+      <label>Sesi (otomatis dari jam, bisa diubah)</label>
+      <select id="sesi">
+        <option value="">- Pilih Sesi -</option>
+        <option value="Asia">Asia</option>
+        <option value="London">London</option>
+        <option value="New York">New York</option>
+      </select>
+
+      <label>Tipe</label>
+      <select id="tipe">
+        <option value="">- Pilih Tipe -</option>
+        <option value="Agresif">Agresif</option>
+        <option value="Konfirmasi">Konfirmasi</option>
+      </select>
+
+      <label>Ikut Trading Plan?</label>
+      <select id="plan"><option value="">- Pilih -</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option></select>
+      <label>Psikologi</label>
+      <select id="emosi">
+        <option value="">- Pilih Psikologi -</option>
+        <option value="Tenang">Tenang</option>
+        <option value="Takut">Takut</option>
+        <option value="Percaya diri">Percaya diri</option>
+        <option value="Fomo">Fomo</option>
+        <option value="Revenge">Revenge</option>
+        <option value="Overconfidence">Overconfidence</option>
+        <option value="Frustrasi">Frustrasi</option>
+      </select>
+
+      <div class="entry-box" data-i="1">
+        <label class="entry-head"><input type="checkbox" class="entry-check" data-i="1" checked><span>Entry 1</span></label>
+        <div class="entry-body" data-i="1">
+          <div class="entry-row"><div class="hasil-col"><label>Hasil</label><select class="entry-outcome" data-i="1">
+            <option value="tp">TP RR</option>
+            <option value="manual">TP</option>
+            <option value="sl">SL</option>
+          </select></div><div class="lot-col"><label>Lot</label><div class="lot-stepper"><button type="button" class="lot-btn" data-i="1" data-d="-1" aria-label="Kurangi lot">«</button><input type="number" class="entry-lot" data-i="1" value="0.01" min="0" step="0.01" inputmode="decimal" placeholder="0.01"><button type="button" class="lot-btn" data-i="1" data-d="1" aria-label="Tambah lot">»</button></div></div></div>
+          <div class="manual-box hidden" data-i="1"><label>TP (pips)</label><input type="number" class="entry-manual" data-i="1" value="0" step="1"></div>
+          <div class="be-box hidden" data-i="1"><label>BE (pips)</label><input type="number" class="entry-be" data-i="1" value="0" step="1"></div>
+          <div class="calc-text mono" id="calc1"></div>
+        </div>
+      </div>
+
+      <div class="entry-box" data-i="2">
+        <label class="entry-head"><input type="checkbox" class="entry-check" data-i="2"><span>Entry 2</span></label>
+        <div class="entry-body hidden" data-i="2">
+          <div class="entry-row"><div class="hasil-col"><label>Hasil</label><select class="entry-outcome" data-i="2">
+            <option value="tp">TP RR</option>
+            <option value="manual">TP</option>
+            <option value="sl">SL</option>
+          </select></div><div class="lot-col"><label>Lot</label><div class="lot-stepper"><button type="button" class="lot-btn" data-i="2" data-d="-1" aria-label="Kurangi lot">«</button><input type="number" class="entry-lot" data-i="2" value="0.01" min="0" step="0.01" inputmode="decimal" placeholder="0.01"><button type="button" class="lot-btn" data-i="2" data-d="1" aria-label="Tambah lot">»</button></div></div></div>
+          <div class="manual-box hidden" data-i="2"><label>TP (pips)</label><input type="number" class="entry-manual" data-i="2" value="0" step="1"></div>
+          <div class="be-box hidden" data-i="2"><label>BE (pips)</label><input type="number" class="entry-be" data-i="2" value="0" step="1"></div>
+          <div class="calc-text mono" id="calc2"></div>
+        </div>
+      </div>
+
+      <div class="entry-box" data-i="3">
+        <label class="entry-head"><input type="checkbox" class="entry-check" data-i="3"><span>Entry 3</span></label>
+        <div class="entry-body hidden" data-i="3">
+          <div class="entry-row"><div class="hasil-col"><label>Hasil</label><select class="entry-outcome" data-i="3">
+            <option value="tp">TP RR</option>
+            <option value="manual">TP</option>
+            <option value="sl">SL</option>
+          </select></div><div class="lot-col"><label>Lot</label><div class="lot-stepper"><button type="button" class="lot-btn" data-i="3" data-d="-1" aria-label="Kurangi lot">«</button><input type="number" class="entry-lot" data-i="3" value="0.01" min="0" step="0.01" inputmode="decimal" placeholder="0.01"><button type="button" class="lot-btn" data-i="3" data-d="1" aria-label="Tambah lot">»</button></div></div></div>
+          <div class="manual-box hidden" data-i="3"><label>TP (pips)</label><input type="number" class="entry-manual" data-i="3" value="0" step="1"></div>
+          <div class="be-box hidden" data-i="3"><label>BE (pips)</label><input type="number" class="entry-be" data-i="3" value="0" step="1"></div>
+          <div class="calc-text mono" id="calc3"></div>
+        </div>
+      </div>
+
+      <label>Reason</label>
+      <div class="reason-table">
+        <div class="reason-row reason-head"><span>Isian</span><span>TF</span></div>
+        <div class="reason-row"><input type="text" class="isian" data-i="1" placeholder="Isian 1"><select class="tf" data-i="1"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
+        <div class="reason-row"><input type="text" class="isian" data-i="2" placeholder="Isian 2"><select class="tf" data-i="2"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
+        <div class="reason-row"><input type="text" class="isian" data-i="3" placeholder="Isian 3"><select class="tf" data-i="3"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
+        <div class="reason-row"><input type="text" class="isian" data-i="4" placeholder="Isian 4"><select class="tf" data-i="4"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
+        <div class="reason-row"><input type="text" class="isian" data-i="5" placeholder="Isian 5"><select class="tf" data-i="5"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
+      </div>
+      <label>Evaluasi</label><textarea id="evaluation" placeholder="Evaluasi setelah trade..."></textarea>
+      <label>Link TradingView</label><input type="url" id="tv" placeholder="https://www.tradingview.com/x/xxxxx">
+
+      <div class="risk-out" id="riskWarn"></div>
+
+      <div id="formError" style="display:none;color:var(--red);font-size:12px;margin-top:12px"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" onclick="closeModal()">Batal</button>
+        <button type="submit" class="btn solid">Simpan Trade</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="overlay" id="cfOverlay">
+  <div class="modal">
+    <div class="modal-head"><h2>Setor / Tarik Dana</h2><button type="button" class="close-x" onclick="closeCfModal()">✕</button></div>
+    <div class="seg">
+      <button type="button" class="cf-btn active" data-t="dep" onclick="setCfType('dep')">SETOR</button>
+      <button type="button" class="cf-btn" data-t="wd" onclick="setCfType('wd')">TARIK</button>
+    </div>
+    <label>Jumlah</label><input type="number" id="cfAmount" min="0" step="any" inputmode="decimal" placeholder="Contoh: 100">
+    <label>Tanggal</label><input type="date" id="cfDate">
+    <label>Catatan (opsional)</label><input type="text" id="cfNote" placeholder="Contoh: top up dari gaji">
+    <div class="auth-error" id="cfError"></div>
+    <button type="button" class="btn solid" style="width:100%;margin-top:16px" onclick="addCash()">Simpan</button>
+    <div class="hist-title" style="margin-top:22px">Riwayat Setor / Tarik</div>
+    <div id="cfList"></div>
+  </div>
+</div>
+
+<div class="overlay" id="settingsOverlay">
+  <div class="modal">
+    <div class="modal-head"><h2>Pengaturan Akun</h2><button type="button" class="close-x" onclick="closeSettingsModal()">✕</button></div>
+    <label>Margin (modal awal)</label><input type="number" id="settingsMargin" step="0.01">
+    <label>Target profit harian (nominal, 0 = off)</label><input type="number" id="settingsTarget" step="any" min="0">
+    <label>Batas loss harian (nominal, 0 = off)</label><input type="number" id="settingsLoss" step="any" min="0">
+    <label>Risiko per trade (% dari balance)</label><input type="number" id="settingsRisk" step="any" min="0">
+    <div class="hist-title" style="margin-top:22px">Data &amp; Backup</div>
+    <div class="bk-row"><button type="button" class="btn ghost" id="bkCopy">Salin JSON</button><button type="button" class="btn ghost" id="bkJson">Unduh JSON</button></div>
+    <div class="bk-row"><button type="button" class="btn ghost" id="bkPdf">Unduh PDF</button><button type="button" class="btn ghost" id="bkImport">Impor</button></div>
+    <div class="bk-row"><div style="flex:1"><label style="margin-top:6px">PDF dari tanggal</label><input type="date" id="pdfFrom"></div><div style="flex:1"><label style="margin-top:6px">sampai tanggal</label><input type="date" id="pdfTo"></div></div><div class="calc-text">Kosong = semua trade</div>
+    <textarea id="bkText" placeholder="Tempel JSON backup di sini lalu tekan Impor lagi" style="margin-top:10px;display:none"></textarea>
+    <input type="file" id="bkFile" accept=".json,application/json" style="display:none">
+    <div class="calc-text" id="bkMsg"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" onclick="closeSettingsModal()">Batal</button>
+      <button type="button" class="btn solid" onclick="saveSettings()">Simpan</button>
+    </div>
+  </div>
+</div>
+  </section>
+
+  <!-- ============ SIGNAL ============ -->
+  <section class="page" id="pageSignals">
+    <div class="wrap">
+      <h1>Signal Trading</h1>
+
+      <div class="card" id="connCard"></div>
+
+      <div class="card">
+        <div class="period-tabs" id="sigFilter">
+          <button data-s="all" class="active">Semua</button>
+          <button data-s="active">Active</button>
+          <button data-s="tp">Hit TP</button>
+          <button data-s="sl">Hit SL</button>
+          <button data-s="be">BE</button>
+          <button data-s="closed">Closed</button>
+        </div>
+        <div class="sig-updated" id="sigUpdated"></div>
+        <div id="signalList"><div class="empty-note">Memuat signal…</div></div>
+      </div>
+    </div>
+    <button class="fab hidden" id="signalFab" onclick="openSignalModal()">+ Kirim Signal</button>
+  </section>
+
+  <!-- ============ KOMUNITAS ============ -->
+  <section class="page" id="pageCommunity">
+    <div class="wrap">
+      <h1>Komunitas</h1>
+      <div id="communityBody"><div class="empty-note">Memuat…</div></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ LOGIN / DAFTAR ============ -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <h1 class="auth-title">TradeHub</h1>
+    <p class="auth-sub" id="authSub">Jurnal trading + signal komunitas.</p>
+
+    <div class="seg auth-seg">
+      <button type="button" class="type-btn active" id="tabLogin" onclick="setAuthMode('login')">Masuk</button>
+      <button type="button" class="type-btn" id="tabRegister" onclick="setAuthMode('register')">Daftar</button>
+    </div>
+
+    <div id="loginView">
+      <label>Username</label><input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
+      <label>Password</label><input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+      <div class="auth-error" id="loginError"></div>
+      <button type="button" class="btn solid" style="width:100%;margin-top:16px" onclick="doLogin()">Masuk</button>
+    </div>
+
+    <div id="registerView" class="hidden">
+      <label>Username</label><input type="text" id="regUsername" placeholder="Username" autocomplete="username">
+      <label>Password</label><input type="password" id="regPassword" placeholder="Minimal 6 karakter" autocomplete="new-password">
+
+      <label>Daftar sebagai</label>
+      <div class="seg">
+        <button type="button" class="type-btn active" data-role="user" onclick="setRole('user')">User</button>
+        <button type="button" class="type-btn" data-role="dev" onclick="setRole('dev')">Dev</button>
+      </div>
+      <div class="role-hint" id="roleHint"></div>
+
+      <div id="codeWrap">
+        <label>Kode komunitas (dari Dev)</label>
+        <input type="text" id="regCode" placeholder="Contoh: ABCD2-XY9K" autocomplete="off" spellcheck="false">
+        <div class="role-hint">Masukkan kode yang dibagikan Dev agar signalnya masuk ke akun Anda.</div>
+      </div>
+
+      <label>Tipe Akun</label>
+      <div class="seg">
+        <button type="button" class="type-btn active" data-type="USD" onclick="setAccType('USD')">USD</button>
+        <button type="button" class="type-btn" data-type="USC" onclick="setAccType('USC')">USC</button>
+        <button type="button" class="type-btn" data-type="Demo" onclick="setAccType('Demo')">Demo</button>
+      </div>
+      <label>Margin (modal awal)</label>
+      <input type="number" id="regMargin" placeholder="Contoh: 500" step="0.01">
+      <div class="auth-error" id="regError"></div>
+      <button type="button" class="btn solid" style="width:100%;margin-top:16px" onclick="doRegister()">Buat Akun</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL SIGNAL (DEV) ============ -->
+<div class="overlay" id="signalOverlay">
+  <div class="modal">
+    <div class="modal-head"><h2 id="signalModalTitle">Kirim Signal</h2><button type="button" class="close-x" onclick="closeSignalModal()">✕</button></div>
+    <div id="sigCodePickWrap">
+      <label>Kirim ke komunitas</label>
+      <select id="sigCodePick"></select>
+    </div>
+    <label>Pair / Aset</label><input id="sigPair" placeholder="XAUUSD" autocomplete="off" spellcheck="false">
+    <label>Arah</label>
+    <div class="seg">
+      <button type="button" class="op-btn active" data-op="Buy" onclick="setSigOp('Buy')">BUY</button>
+      <button type="button" class="op-btn" data-op="Sell" onclick="setSigOp('Sell')">SELL</button>
+    </div>
+    <div class="two-col">
+      <div><label>Entry</label><input type="number" id="sigEntry" step="0.00001" inputmode="decimal" placeholder="2415.50"></div>
+      <div><label>Timeframe</label><input type="text" id="sigTf" placeholder="H1" autocomplete="off"></div>
+    </div>
+    <label>Stop Loss</label><input type="number" id="sigSl" step="0.00001" inputmode="decimal" placeholder="2405.50">
+    <div class="three-col">
+      <div><label>TP 1</label><input type="number" id="sigTp1" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
+      <div><label>TP 2</label><input type="number" id="sigTp2" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
+      <div><label>TP 3</label><input type="number" id="sigTp3" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
+    </div>
+    <label>Catatan</label><textarea id="sigNote" placeholder="Analisa singkat, rencana, catatan risiko..."></textarea>
+    <div class="auth-error" id="sigError"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" id="sigDeleteBtn" onclick="deleteSignal()">Hapus</button>
+      <button type="button" class="btn ghost" onclick="closeSignalModal()">Batal</button>
+      <button type="button" class="btn solid" onclick="submitSignal()">Kirim Signal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL AKUN ============ -->
+<div class="overlay" id="akunOverlay">
+  <div class="modal">
+    <div class="modal-head"><h2>Akun</h2><button type="button" class="close-x" onclick="closeAkunModal()">✕</button></div>
+    <div class="account-info">
+      <div class="info-row"><span>Username</span><b id="akunUsername">-</b></div>
+      <div class="info-row"><span>Role</span><b id="akunRole">-</b></div>
+      <div class="info-row"><span>Tipe akun</span><b id="akunType">-</b></div>
+      <div class="info-row"><span>Komunitas</span><b id="akunCode">-</b></div>
+    </div>
+    <div class="hist-title" style="margin-top:20px">Koneksi signal</div>
+    <div id="akunConn"></div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button type="button" class="btn ghost" onclick="openSettingsFromAkun()">Pengaturan</button>
+      <button type="button" class="btn ghost" onclick="openPwModal()">Password</button>
+      <button type="button" class="btn solid" onclick="doLogout()">Keluar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL GANTI PASSWORD ============ -->
+<div class="overlay" id="pwOverlay">
+  <div class="modal">
+    <div class="modal-head"><h2>Ganti Password</h2><button type="button" class="close-x" onclick="closePwModal()">✕</button></div>
+    <label>Password baru</label><input type="password" id="pwNew" placeholder="Minimal 6 karakter">
+    <label>Ulangi password baru</label><input type="password" id="pwNew2" placeholder="Ulangi">
+    <div class="auth-error" id="pwError"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" onclick="closePwModal()">Batal</button>
+      <button type="button" class="btn solid" onclick="savePassword()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast2" role="status"><span id="toast2Msg"></span></div>
+
+<!-- Supabase (hanya dipakai kalau js/supabase-config.js sudah diisi) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* js/supabase-config.js */
+/* ============================================================
+   TRADEHUB — konfigurasi Supabase
+   Isi dua baris di bawah ini dengan data dari project Supabase Anda
+   (Project Settings → API → Project URL + anon public key).
+
+   Kalau masih berisi ISI_DI_SINI, aplikasi otomatis memakai
+   server Node.js (server.js) seperti sebelumnya.
+   ============================================================ */
+const SUPABASE_URL = 'https://juczayxabimigvlhujeo.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_QXZyHYgx5CSWrUgcGv50Ig_3O__9bj8';
+
+window.SUPABASE_URL = SUPABASE_URL;
+window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
+
+</script>
+
+<script>
+/* js/app.js */
+/* ===== TradeHub — inti aplikasi (auth, tema, navigasi, sinkron data) ===== */
+let TOKEN = '';
+try { TOKEN = localStorage.getItem('thToken') || ''; } catch (e) { }
+let ME = null;              // data user dari server
+let currentAccount = null;  // alias yang dipakai jurnal (js/journal.js)
+let CODE = null;            // info komunitas yang terhubung
+let MEMBERS = [];
+let CURRENT_PAGE = 'journal';
+
+const $ = id => document.getElementById(id);
+function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+/* ---------------- API ---------------- */
+let API = {
+  mode: 'server',
+  async call(method, path, body) {
+    const res = await fetch(path, {
+      method,
+      headers: Object.assign({ 'Content-Type': 'application/json' }, TOKEN ? { Authorization: 'Bearer ' + TOKEN } : {}),
+      body: body ? JSON.stringify(body) : undefined
+    });
+    let data = {};
+    try { data = await res.json(); } catch (e) { }
+    if (!res.ok) {
+      if (res.status === 401 && TOKEN && path !== '/api/login') hardLogout();
+      throw new Error(data.error || ('Gagal (' + res.status + ')'));
+    }
+    return data;
+  },
+  getTrades() { return API.call('GET', '/api/trades').then(d => d.trades || []); },
+  getCashflows() { return API.call('GET', '/api/cashflows').then(d => d.cashflows || []); }
+};
+let tTrade = null, tCash = null;
+API.saveTrades = function (arr) {
+  clearTimeout(tTrade);
+  tTrade = setTimeout(() => API.call('PUT', '/api/trades', { trades: arr })
+    .catch(e => toast2('Jurnal gagal tersimpan: ' + e.message)), 400);
+};
+API.saveCashflows = function (arr) {
+  clearTimeout(tCash);
+  tCash = setTimeout(() => API.call('PUT', '/api/cashflows', { cashflows: arr })
+    .catch(e => toast2('Setor/tarik gagal tersimpan: ' + e.message)), 400);
+};
+API.saveProfile = function (patch) {
+  return API.call('PUT', '/api/me', patch).then(d => {
+    if (d.user) { ME = d.user; currentAccount = d.user; }
+    toast2('Pengaturan tersimpan');
+  }).catch(e => toast2('Gagal menyimpan: ' + e.message));
+};
+window.API = API;
+
+/* ---------------- util ---------------- */
+let toast2Timer = null;
+function toast2(msg) {
+  const el = $('toast2'); if (!el) return;
+  $('toast2Msg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast2Timer);
+  toast2Timer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+function copyText(txt, label) {
+  const done = () => toast2((label || 'Teks') + ' disalin');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(done).catch(() => fallback());
+  } else fallback();
+  function fallback() {
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast2('Salin manual: ' + txt); }
+    ta.remove();
+  }
+}
+/* konversi jarak harga ke pips (perkiraan umum broker) */
+function pipsBetween(pair, a, b) {
+  if (a == null || b == null || a === '' || b === '') return null;
+  const d = Math.abs(Number(a) - Number(b));
+  if (!isFinite(d) || !isFinite(Number(a)) || !isFinite(Number(b))) return null;
+  const p = String(pair || '').toUpperCase();
+  if (/USDT|USDC|BUSD/.test(p)) return null;              // kripto: tidak memakai satuan pips
+  if (/US30|NAS100|SPX|NDX|GER40|DJ30|US500/.test(p)) return Math.round(d * 10) / 10;   // 1 poin = 1 pip
+  if (/JPY/.test(p)) return Math.round(d * 1000) / 10;                                   // pip 0.01
+  if (/XAU|XAG|XPT|XPD/.test(p)) return Math.round(d * 1000) / 10;                       // pip 0.01
+  if (/OIL|XTI|XBR|UKOIL|USOIL/.test(p)) return Math.round(d * 1000) / 10;               // pip 0.01
+  if (p.length >= 6) return Math.round(d * 100000) / 10;
+  return null;
+}
+function fmtNum(v) {
+  if (v == null || v === '' || !isFinite(Number(v))) return '-';
+  return Number(v).toLocaleString('id-ID', { maximumFractionDigits: 5 });
+}
+function fmtTime(ts) {
+  return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(new Date(ts));
+}
+
+/* ---------------- tema ---------------- */
+function applyTheme(t) {
+  document.documentElement.dataset.theme = t;
+  const b = $('themeBtn'); if (b) b.textContent = t === 'light' ? '☾' : '☀';
+  const m = document.querySelector('meta[name=theme-color]');
+  if (m) m.content = t === 'light' ? '#ffffff' : '#000000';
+  try { localStorage.setItem('thTheme', t); } catch (e) { }
+}
+function cycleTheme() { applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'); }
+applyTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
+
+/* ---------------- auth ---------------- */
+let authMode = 'login', regRole = 'user', regType = 'USD';
+function setAuthMode(m) {
+  authMode = m;
+  $('tabLogin').classList.toggle('active', m === 'login');
+  $('tabRegister').classList.toggle('active', m === 'register');
+  $('loginView').classList.toggle('hidden', m !== 'login');
+  $('registerView').classList.toggle('hidden', m !== 'register');
+  $('authSub').textContent = m === 'login'
+    ? 'Masuk untuk membuka jurnal dan signal.'
+    : 'Pilih peran Anda: Dev (pengirim signal) atau User (penerima signal).';
+  $('loginError').classList.remove('show');
+  $('regError').classList.remove('show');
+}
+function setRole(r) {
+  regRole = r;
+  document.querySelectorAll('[data-role]').forEach(b => b.classList.toggle('active', b.dataset.role === r));
+  $('codeWrap').style.display = r === 'user' ? '' : 'none';
+  $('roleHint').textContent = r === 'dev'
+    ? 'Dev: Anda akan mendapat kode komunitas otomatis untuk dibagikan ke user, lalu bisa mengirim signal.'
+    : 'User: masukkan kode dari Dev agar signal-nya masuk ke akun Anda.';
+  $('roleHint').className = 'role-hint';
+}
+function setAccType(t) {
+  regType = t;
+  document.querySelectorAll('[data-type]').forEach(b => b.classList.toggle('active', b.dataset.type === t));
+}
+function showAuthError(id, msg) { const e = $(id); e.textContent = msg; e.classList.add('show'); }
+
+async function doRegister() {
+  const err = $('regError'); err.classList.remove('show');
+  const username = $('regUsername').value.trim();
+  const password = $('regPassword').value;
+  const code = $('regCode').value.trim();
+  if (username.length < 3) return showAuthError('regError', 'Username minimal 3 karakter.');
+  if (password.length < 6) return showAuthError('regError', 'Password minimal 6 karakter.');
+  if (regRole === 'user' && !code) return showAuthError('regError', 'Kode komunitas wajib diisi untuk akun User.');
+  try {
+    const d = await API.call('POST', '/api/register', {
+      username, password, role: regRole, type: regType,
+      margin: Number($('regMargin').value) || 0, code
+    });
+    await startSession(d.token);
+  } catch (e) { showAuthError('regError', e.message); }
+}
+async function doLogin() {
+  const err = $('loginError'); err.classList.remove('show');
+  const username = $('loginUsername').value.trim();
+  const password = $('loginPassword').value;
+  if (!username || !password) return showAuthError('loginError', 'Username dan password wajib diisi.');
+  try {
+    const d = await API.call('POST', '/api/login', { username, password });
+    await startSession(d.token);
+  } catch (e) { showAuthError('loginError', e.message); }
+}
+async function startSession(token) {
+  if (token && token !== 'sb') {
+    TOKEN = token;
+    try { localStorage.setItem('thToken', token); } catch (e) { }
+  }
+  const d = await API.call('GET', '/api/me');
+  ME = d.user; currentAccount = d.user; CODE = d.code; MEMBERS = d.members || [];
+  $('loginPassword').value = ''; $('regPassword').value = '';
+  await enterApp();
+}
+async function doLogout() {
+  try { await API.call('POST', '/api/logout'); } catch (e) { }
+  hardLogout();
+  toast2('Berhasil keluar');
+}
+function hardLogout() {
+  if (hardLogout._busy) return;
+  hardLogout._busy = true;
+  TOKEN = ''; ME = null; currentAccount = null; CODE = null; MEMBERS = [];
+  try { localStorage.removeItem('thToken'); } catch (e) { }
+  stopPolling();
+  if (window.stopJournal) window.stopJournal();
+  $('authScreen').style.display = 'flex';
+  setAuthMode('login');
+  closeAkunModal();
+  hardLogout._busy = false;
+}
+
+/* ---------------- masuk ke aplikasi ---------------- */
+async function enterApp() {
+  $('authScreen').style.display = 'none';
+  $('roleBadge').textContent = ME.role === 'dev' ? 'DEV' : 'USER';
+  $('signalFab').classList.toggle('hidden', ME.role !== 'dev');
+  const [tr, cf] = await Promise.all([API.getTrades().catch(() => []), API.getCashflows().catch(() => [])]);
+  if (window.setJournalData) window.setJournalData(tr, cf);
+  if (window.resetJournal) window.resetJournal();
+  if (window.startJournal) window.startJournal();
+  renderAkun();
+  renderCommunity();
+  loadSignals();
+  startPolling();
+  go('journal');
+}
+
+/* ---------------- navigasi ---------------- */
+function go(page) {
+  CURRENT_PAGE = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page' + page[0].toUpperCase() + page.slice(1)));
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.page === page));
+  window.scrollTo(0, 0);
+  if (page === 'signals') { loadSignals(); }
+  if (page === 'community') { renderCommunity(); }
+}
+
+/* ---------------- modal akun ---------------- */
+function openAkunModal() {
+  if (!ME) return;
+  renderAkun();
+  $('akunOverlay').classList.add('open');
+}
+function closeAkunModal() { $('akunOverlay').classList.remove('open'); }
+function closeAccountModal() { closeAkunModal(); }   // kompatibilitas dengan jurnal
+function renderAkun() {
+  if (!ME) return;
+  $('akunUsername').textContent = ME.username;
+  $('akunRole').textContent = ME.role === 'dev' ? 'Dev (pengirim signal)' : 'User (penerima signal)';
+  $('akunType').textContent = ME.type;
+  $('akunCode').textContent = CODE ? CODE.code : '-';
+  let h = '';
+  if (ME.role === 'dev') {
+    h = CODE
+      ? `<div class="lvl"><b>${esc(CODE.code)}</b><small style="display:block;margin-top:4px">${esc(CODE.label)} · ${CODE.members} member · klik untuk menyalin</small></div>
+         <div class="sig-actions"><button class="chip" onclick="copyText('${esc(CODE.code)}','Kode')">Salin kode</button><button class="chip" onclick="go('community');closeAkunModal()">Kelola kode</button></div>`
+      : '<div class="empty-note">Belum ada kode komunitas. Buka menu Komunitas untuk membuatnya.</div>';
+  } else {
+    h = CODE
+      ? `<div class="member-row"><div class="who">${esc(CODE.label)}<small>Dev: ${esc(CODE.devName)} · kode ${esc(CODE.code)}</small></div></div>
+         <div class="sig-actions"><button class="chip" onclick="go('community');closeAkunModal()">Ganti kode</button></div>`
+      : '<div class="empty-note">Belum terhubung. Buka menu Komunitas lalu masukkan kode dari Dev.</div>';
+  }
+  $('akunConn').innerHTML = h;
+}
+function openSettingsFromAkun() { closeAkunModal(); if (ME && window.openSettingsModal) window.openSettingsModal(); }
+function openPwModal() { closeAkunModal(); $('pwNew').value = ''; $('pwNew2').value = ''; $('pwError').classList.remove('show'); $('pwOverlay').classList.add('open'); }
+function closePwModal() { $('pwOverlay').classList.remove('open'); }
+async function savePassword() {
+  const a = $('pwNew').value, b = $('pwNew2').value;
+  if (a.length < 6) { $('pwError').textContent = 'Password minimal 6 karakter.'; $('pwError').classList.add('show'); return; }
+  if (a !== b) { $('pwError').textContent = 'Password tidak sama.'; $('pwError').classList.add('show'); return; }
+  try { await API.call('PUT', '/api/me', { password: a }); closePwModal(); toast2('Password diperbarui'); }
+  catch (e) { $('pwError').textContent = e.message; $('pwError').classList.add('show'); }
+}
+
+/* ---------------- polling signal ---------------- */
+let pollTimer = null;
+function sigSeenKey() { return 'thSigSeen::' + (ME ? ME.id : 'anon'); }
+function startPolling() {
+  stopPolling();
+  pollTimer = setInterval(() => { if (ME) loadSignals(true); }, 20000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && ME) loadSignals(true); });
+}
+function stopPolling() { if (pollTimer) clearInterval(pollTimer); pollTimer = null; }
+
+/* ---------------- boot ---------------- */
+async function boot() {
+  setAuthMode('login');
+  setRole('user');
+  setAccType('USD');
+  $('authScreen').style.display = 'flex';
+  /* mode server: butuh token tersimpan; mode supabase: sesi dipulihkan otomatis */
+  if (!TOKEN && !(window.SB_MODE && API.mode === 'supabase')) return;
+  try {
+    const d = await API.call('GET', '/api/me');
+    ME = d.user; currentAccount = d.user; CODE = d.code; MEMBERS = d.members || [];
+    await enterApp();
+  } catch (e) {
+    /* belum masuk / sesi kedaluwarsa → tetap di layar login */
+  }
+}
+window.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  ['akunOverlay', 'pwOverlay', 'signalOverlay'].forEach(id => { const el = $(id); if (el) el.classList.remove('open'); });
+});
+
+</script>
+<script>
+/* js/db.js */
+/* ============================================================
+   TRADEHUB — lapisan data versi Supabase (tanpa server Node.js)
+   File ini menggantikan pemanggilan /api/... menjadi query Supabase.
+   Antarmukanya sama persis (API.call, API.getTrades, API.saveTrades, ...)
+   sehingga jurnal, signal, dan komunitas tidak perlu diubah.
+   ============================================================ */
+(function () {
+  const U = window.SUPABASE_URL, K = window.SUPABASE_ANON_KEY;
+  const filled = v => v && String(v).indexOf('ISI_DI_SINI') === -1 && String(v).length > 10;
+  if (!filled(U) || !filled(K) || !window.supabase) { window.SB_MODE = false; return; }
+
+  const sb = window.supabase.createClient(U, K, { auth: { persistSession: true, autoRefreshToken: true } });
+  window.SB_MODE = true;
+  window.SB = sb;
+
+  /* ---------- util ---------- */
+  const emailOf = u => String(u).trim().toLowerCase().replace(/[^a-z0-9._-]/g, '') + '@tradehub.local';
+  const num = v => (v == null || v === '' ? null : Number(v));
+  const ts = v => {
+    if (v == null) return Date.now();
+    const n = Date.parse(String(v).replace(' ', 'T') + (/[zZ]|[+-]\d\d:\d\d$/.test(v) ? '' : 'Z'));
+    return isFinite(n) ? n : Date.now();
+  };
+  function newCode() {
+    const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for (let i = 0; i < 10; i++) { if (i === 6) out += '-'; out += abc[Math.floor(Math.random() * abc.length)]; }
+    return out;
+  }
+
+  function mapProfile(p) {
+    return {
+      id: p.id, username: p.username, role: p.role, type: p.type,
+      margin: Number(p.margin) || 0, dailyTarget: Number(p.daily_target) || 0,
+      dailyLoss: Number(p.daily_loss) || 0, riskPct: p.risk_pct == null ? 1 : Number(p.risk_pct),
+      codeId: p.code_id || null, createdAt: ts(p.created_at)
+    };
+  }
+  function mapCode(c, profiles) {
+    if (!c) return null;
+    const list = profiles || [];
+    const dev = list.find(p => p.id === c.dev_id);
+    return {
+      id: c.id, code: c.code, label: c.label, active: c.active !== false,
+      createdAt: ts(c.created_at), devId: c.dev_id, devName: dev ? dev.username : '-',
+      members: list.filter(p => p.code_id === c.id && p.id !== c.dev_id).length
+    };
+  }
+  function mapSignal(s, codes, profiles) {
+    const c = (codes || []).find(x => x.id === s.code_id);
+    const dev = (profiles || []).find(p => p.id === s.dev_id);
+    return {
+      id: s.id, codeId: s.code_id, devId: s.dev_id, pair: s.pair, side: s.side,
+      entry: num(s.entry), sl: num(s.sl), tp1: num(s.tp1), tp2: num(s.tp2), tp3: num(s.tp3),
+      timeframe: s.timeframe, note: s.note, status: s.status, result: s.result,
+      createdAt: ts(s.created_at), updatedAt: ts(s.updated_at),
+      codeLabel: c ? c.label : '-', devName: dev ? dev.username : '-'
+    };
+  }
+
+  /* ---------- sesi & profil ---------- */
+  async function getUser() {
+    const { data, error } = await sb.auth.getUser();
+    if (error || !data || !data.user) throw new Error('Belum masuk.');
+    return data.user;
+  }
+  async function myRow() {
+    const u = await getUser();
+    const { data, error } = await sb.from('profiles').select('*').eq('id', u.id).single();
+    if (error) throw new Error(error.message);
+    return data;
+  }
+  async function base() {
+    const [c, p] = await Promise.all([
+      sb.from('codes').select('*'),
+      sb.from('profiles').select('id,username,role,created_at,code_id')
+    ]);
+    if (c.error) throw new Error(c.error.message);
+    if (p.error) throw new Error(p.error.message);
+    return { codes: c.data || [], profiles: p.data || [] };
+  }
+
+  async function me() {
+    const prof = await myRow();
+    const b = await base();
+    const code = prof.code_id ? b.codes.find(c => c.id === prof.code_id) : null;
+    let members = [];
+    if (prof.role === 'dev') {
+      const mine = b.codes.filter(c => c.dev_id === prof.id).map(c => c.id);
+      members = b.profiles
+        .filter(p => p.id !== prof.id && p.code_id && mine.indexOf(p.code_id) >= 0)
+        .map(p => ({ id: p.id, username: p.username, role: p.role, joinedAt: ts(p.created_at) }));
+    }
+    return { user: mapProfile(prof), code: mapCode(code, b.profiles), members };
+  }
+
+  async function register(body) {
+    const username = String(body.username || '').trim();
+    const password = String(body.password || '');
+    const role = body.role === 'dev' ? 'dev' : 'user';
+    const type = ['USD', 'USC', 'Demo'].indexOf(body.type) >= 0 ? body.type : 'USD';
+    const margin = Number(body.margin) || 0;
+
+    if (username.length < 3) throw new Error('Username minimal 3 karakter.');
+    if (password.length < 6) throw new Error('Password minimal 6 karakter.');
+
+    const { data: exist } = await sb.from('profiles').select('id').ilike('username', username);
+    if (exist && exist.length) throw new Error('Username sudah dipakai.');
+
+    let codeRec = null;
+    if (role === 'user') {
+      const kode = String(body.code || '').trim().toUpperCase();
+      const { data: cs } = await sb.from('codes').select('*').ilike('code', kode);
+      if (!cs || !cs.length) throw new Error('Kode komunitas tidak ditemukan.');
+      codeRec = cs[0];
+      if (codeRec.active === false) throw new Error('Kode komunitas ini sudah dinonaktifkan.');
+    }
+
+    const { data, error } = await sb.auth.signUp({
+      email: emailOf(username), password, options: { data: { username: username, role: role } }
+    });
+    if (error) throw new Error(error.message);
+    if (!data || !data.user) throw new Error('Pendaftaran gagal.');
+    if (!data.session) {
+      throw new Error('Pendaftaran terkirim tapi belum bisa langsung masuk. Matikan "Confirm email" di Supabase → Authentication → Sign In / Providers, lalu daftar ulang.');
+    }
+
+    const uid = data.user.id;
+    let codeId = codeRec ? codeRec.id : null;
+    if (role === 'dev') {
+      const { data: c, error: ce } = await sb.from('codes')
+        .insert({ code: newCode(), label: 'Komunitas ' + username, dev_id: uid, active: true })
+        .select().single();
+      if (ce) throw new Error(ce.message);
+      codeId = c.id;
+    }
+    const { error: pe } = await sb.from('profiles')
+      .insert({ id: uid, username: username, role: role, type: type, margin: margin, code_id: codeId });
+    if (pe) throw new Error(pe.message);
+
+    return {
+      token: 'sb',
+      user: mapProfile({ id: uid, username: username, role: role, type: type, margin: margin, code_id: codeId, daily_target: 0, daily_loss: 0, risk_pct: 1, created_at: new Date().toISOString() })
+    };
+  }
+
+  async function login(body) {
+    const username = String(body.username || '').trim();
+    const password = String(body.password || '');
+    if (!username || !password) throw new Error('Username dan password wajib diisi.');
+    const { error } = await sb.auth.signInWithPassword({ email: emailOf(username), password: password });
+    if (error) throw new Error('Username atau password salah.');
+    return { token: 'sb' };
+  }
+
+  async function updateProfile(body) {
+    const prof = await myRow();
+    const patch = {};
+    if (body.type && ['USD', 'USC', 'Demo'].indexOf(body.type) >= 0) patch.type = body.type;
+    if (body.margin != null) patch.margin = Number(body.margin) || 0;
+    if (body.dailyTarget != null) patch.daily_target = Number(body.dailyTarget) || 0;
+    if (body.dailyLoss != null) patch.daily_loss = Number(body.dailyLoss) || 0;
+    if (body.riskPct != null) patch.risk_pct = Math.max(0, Number(body.riskPct) || 0);
+    if (Object.keys(patch).length) {
+      const { error } = await sb.from('profiles').update(patch).eq('id', prof.id);
+      if (error) throw new Error(error.message);
+    }
+    if (body.password) {
+      if (String(body.password).length < 6) throw new Error('Password minimal 6 karakter.');
+      const { error } = await sb.auth.updateUser({ password: String(body.password) });
+      if (error) throw new Error(error.message);
+    }
+    return { user: mapProfile(Object.assign({}, prof, patch)) };
+  }
+
+  /* ---------- kode komunitas ---------- */
+  async function listCodes() {
+    const prof = await myRow();
+    const b = await base();
+    return b.codes.filter(c => c.dev_id === prof.id).map(c => mapCode(c, b.profiles));
+  }
+  async function createCode(label) {
+    const prof = await myRow();
+    const { data: mine } = await sb.from('codes').select('id').eq('dev_id', prof.id);
+    if ((mine || []).length >= 5) throw new Error('Maksimal 5 kode komunitas.');
+    const { data, error } = await sb.from('codes')
+      .insert({ code: newCode(), label: String(label || '').trim() || ('Komunitas ' + prof.username), dev_id: prof.id, active: true })
+      .select().single();
+    if (error) throw new Error(error.message);
+    if (!prof.code_id) await sb.from('profiles').update({ code_id: data.id }).eq('id', prof.id);
+    const b = await base();
+    return { code: mapCode(data, b.profiles) };
+  }
+  async function codeAction(id, kind) {
+    const prof = await myRow();
+    const { data: rows } = await sb.from('codes').select('*').eq('id', id).eq('dev_id', prof.id);
+    const row = (rows || [])[0];
+    if (!row) throw new Error('Kode tidak ditemukan.');
+    if (kind === 'delete') {
+      const { error } = await sb.from('codes').delete().eq('id', id).eq('dev_id', prof.id);
+      if (error) throw new Error(error.message);
+      return { ok: true };
+    }
+    const patch = kind === 'regen' ? { code: newCode(), active: true } : { active: !row.active };
+    const { data, error } = await sb.from('codes').update(patch).eq('id', id).eq('dev_id', prof.id).select().single();
+    if (error) throw new Error(error.message);
+    const b = await base();
+    return { code: mapCode(data, b.profiles) };
+  }
+  async function join(kode) {
+    const prof = await myRow();
+    const { data: rows } = await sb.from('codes').select('*').ilike('code', String(kode || '').trim());
+    const c = (rows || [])[0];
+    if (!c) throw new Error('Kode tidak ditemukan.');
+    if (c.active === false) throw new Error('Kode ini sedang dinonaktifkan.');
+    if (c.dev_id === prof.id) throw new Error('Ini kode milik Anda sendiri.');
+    const { error } = await sb.from('profiles').update({ code_id: c.id }).eq('id', prof.id);
+    if (error) throw new Error(error.message);
+    const b = await base();
+    return { code: mapCode(c, b.profiles) };
+  }
+  async function leave() {
+    const prof = await myRow();
+    if (prof.role === 'dev') throw new Error('Akun Dev tidak bisa keluar dari komunitasnya sendiri.');
+    const { error } = await sb.from('profiles').update({ code_id: null }).eq('id', prof.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  }
+
+  /* ---------- signal ---------- */
+  async function listSignals(status) {
+    const prof = await myRow();
+    const [{ data: sigs, error }, b] = await Promise.all([
+      sb.from('signals').select('*').order('created_at', { ascending: false }),
+      base()
+    ]);
+    if (error) throw new Error(error.message);
+    let list = (sigs || []).filter(s => s.dev_id === prof.id || (prof.code_id && s.code_id === prof.code_id));
+    if (status && status !== 'all') list = list.filter(s => s.status === status);
+    return list.map(s => mapSignal(s, b.codes, b.profiles));
+  }
+  async function createSignal(body) {
+    const prof = await myRow();
+    if (prof.role !== 'dev') throw new Error('Hanya Dev yang bisa mengirim signal.');
+    let codeId = body.codeId || prof.code_id;
+    const { data: rows } = await sb.from('codes').select('*').eq('dev_id', prof.id);
+    const c = (rows || []).filter(x => x.id === codeId)[0] || (rows || [])[0];
+    if (!c) throw new Error('Kode komunitas tidak valid.');
+    const pair = String(body.pair || '').trim().toUpperCase();
+    if (!pair) throw new Error('Pair wajib diisi.');
+    const row = {
+      code_id: c.id, dev_id: prof.id, pair: pair, side: body.side === 'Sell' ? 'Sell' : 'Buy',
+      entry: num(body.entry), sl: num(body.sl), tp1: num(body.tp1), tp2: num(body.tp2), tp3: num(body.tp3),
+      timeframe: String(body.timeframe || '').trim(), note: String(body.note || '').trim(),
+      status: 'active', result: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString()
+    };
+    const { data, error } = await sb.from('signals').insert(row).select().single();
+    if (error) throw new Error(error.message);
+    const b = await base();
+    return { signal: mapSignal(data, b.codes, b.profiles) };
+  }
+  async function patchSignal(body) {
+    const prof = await myRow();
+    if (prof.role !== 'dev') throw new Error('Hanya Dev yang bisa mengubah signal.');
+    const { data: rows } = await sb.from('signals').select('*').eq('id', body.id).eq('dev_id', prof.id);
+    const row = (rows || [])[0];
+    if (!row) throw new Error('Signal tidak ditemukan.');
+    const patch = { updated_at: new Date().toISOString() };
+    ['pair', 'side', 'entry', 'sl', 'tp1', 'tp2', 'tp3', 'timeframe', 'note', 'status', 'result'].forEach(k => {
+      if (body[k] !== undefined) patch[k] = body[k];
+    });
+    if (body.status && body.status !== 'active') patch.result = body.result || body.status;
+    if (body.status === 'active') patch.result = null;
+    const { data, error } = await sb.from('signals').update(patch).eq('id', body.id).eq('dev_id', prof.id).select().single();
+    if (error) throw new Error(error.message);
+    const b = await base();
+    return { signal: mapSignal(data, b.codes, b.profiles) };
+  }
+  async function deleteSignal(id) {
+    const prof = await myRow();
+    const { error } = await sb.from('signals').delete().eq('id', id).eq('dev_id', prof.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  }
+
+  /* ---------- jurnal ---------- */
+  async function getTrades() {
+    const u = await getUser();
+    const { data, error } = await sb.from('user_data').select('trades').eq('user_id', u.id).maybeSingle();
+    if (error) throw new Error(error.message);
+    return (data && data.trades) || [];
+  }
+  async function putTrades(trades) {
+    const u = await getUser();
+    const { error } = await sb.from('user_data')
+      .upsert({ user_id: u.id, trades: trades || [], updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  }
+  async function getCashflows() {
+    const u = await getUser();
+    const { data, error } = await sb.from('user_data').select('cashflows').eq('user_id', u.id).maybeSingle();
+    if (error) throw new Error(error.message);
+    return (data && data.cashflows) || [];
+  }
+  async function putCashflows(cashflows) {
+    const u = await getUser();
+    const { data: cur } = await sb.from('user_data').select('trades').eq('user_id', u.id).maybeSingle();
+    const { error } = await sb.from('user_data').upsert({
+      user_id: u.id, trades: (cur && cur.trades) || [], cashflows: cashflows || [], updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  }
+
+  /* ---------- router: sama seperti endpoint /api di versi Node ---------- */
+  async function call(method, path, body) {
+    body = body || {};
+    const [p, qs] = String(path).split('?');
+    const params = new URLSearchParams(qs || '');
+    const key = method + ' ' + p;
+    switch (key) {
+      case 'POST /api/register': return register(body);
+      case 'POST /api/login': return login(body);
+      case 'POST /api/logout': await sb.auth.signOut(); return { ok: true };
+      case 'GET /api/me': return me();
+      case 'PUT /api/me': return updateProfile(body);
+      case 'GET /api/trades': return { trades: await getTrades() };
+      case 'PUT /api/trades': return putTrades(body.trades);
+      case 'GET /api/cashflows': return { cashflows: await getCashflows() };
+      case 'PUT /api/cashflows': return putCashflows(body.cashflows);
+      case 'GET /api/codes': return { codes: await listCodes() };
+      case 'POST /api/codes': return createCode(body.label);
+      case 'POST /api/codes/toggle': return codeAction(body.id, 'toggle');
+      case 'POST /api/codes/regen': return codeAction(body.id, 'regen');
+      case 'DELETE /api/codes': return codeAction(body.id, 'delete');
+      case 'POST /api/join': return join(body.code);
+      case 'POST /api/leave': return leave();
+      case 'GET /api/signals': return { signals: await listSignals(params.get('status')), serverTime: Date.now() };
+      case 'POST /api/signals': return createSignal(body);
+      case 'PATCH /api/signals': return patchSignal(body);
+      case 'DELETE /api/signals': return deleteSignal(body.id);
+      default: throw new Error('Endpoint tidak dikenal: ' + key);
+    }
+  }
+
+  /* ---------- pasang ke API global ---------- */
+  let tT = null, tC = null;
+  const SupabaseAPI = {
+    mode: 'supabase',
+    call: call,
+    getTrades: getTrades,
+    getCashflows: getCashflows,
+    saveTrades: function (arr) { clearTimeout(tT); tT = setTimeout(() => putTrades(arr).catch(e => toast2('Jurnal gagal tersimpan: ' + e.message)), 400); },
+    saveCashflows: function (arr) { clearTimeout(tC); tC = setTimeout(() => putCashflows(arr).catch(e => toast2('Setor/tarik gagal tersimpan: ' + e.message)), 400); },
+    saveProfile: function (patch) {
+      return call('PUT', '/api/me', patch).then(d => {
+        if (d.user) { ME = d.user; currentAccount = d.user; }
+        toast2('Pengaturan tersimpan');
+      }).catch(e => toast2('Gagal menyimpan: ' + e.message));
+    }
+  };
+  API = SupabaseAPI;          // timpa API dari app.js (let)
+  window.API = SupabaseAPI;   // untuk jurnal
+  console.log('[TradeHub] mode Supabase aktif');
+})();
+
+</script>
+<script>
+/* js/journal.js */
+/* --- data layer: disinkronkan ke server lewat API (lihat js/app.js) --- */
+let trades=[];
+let cashflows=[];
+function loadCash(){return cashflows||[];}
+function save(){ if(window.API) window.API.saveTrades(trades); }
+function saveCash(){ if(window.API) window.API.saveCashflows(cashflows); }
+function netCash(){return cashflows.reduce((a,c)=>a+(c.type==='wd'?-1:1)*(c.amount||0),0);}
+let viewDate=new Date();
+let selectedDate=null;
+let chartPeriod='month';
+let currentOp='Buy';
+/* $() & esc() disediakan js/app.js */
+const pad=n=>String(n).padStart(2,'0');
+const localDateStr=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+
+function openModal(){
+  $('overlay').classList.add('open');
+  const now=new Date();
+  $('datetime').value=`${localDateStr(now)}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  sesiManual=false;$('sesi').value=autoSesi($('datetime').value);
+  refreshWarn();
+}
+function closeModal(){$('overlay').classList.remove('open');editingId=null;$('modalTitle').textContent='Tambah Trade';resetForm();}
+function resetForm(){
+  $('tradeForm').reset();
+  setOp('Buy');
+  $('sl').value=50;
+  $('sesi').value='';$('tipe').value='';$('emosi').value='';
+  document.querySelectorAll('.isian').forEach(i=>i.value='');
+  document.querySelectorAll('.tf').forEach(s=>s.value='');
+  document.querySelectorAll('.entry-check').forEach((c,idx)=>{c.checked=idx===0;});
+  document.querySelectorAll('.entry-body').forEach((b,idx)=>{b.classList.toggle('hidden',idx!==0);});
+  document.querySelectorAll('.entry-outcome').forEach(s=>s.value='tp');
+  document.querySelectorAll('.manual-box,.be-box').forEach(b=>b.classList.add('hidden'));
+  [1,2,3].forEach(updateCalc);
+  if(typeof refreshWarn==='function') refreshWarn();
+}
+function setOp(op){
+  currentOp=op;
+  document.querySelectorAll('.op-btn').forEach(b=>b.classList.toggle('active',b.dataset.op===op));
+}
+
+document.querySelectorAll('.entry-check').forEach(c=>{
+  c.addEventListener('change',e=>{
+    const i=e.target.dataset.i;
+    document.querySelector(`.entry-body[data-i="${i}"]`).classList.toggle('hidden',!e.target.checked);
+    updateCalc(i);
+  });
+});
+document.querySelectorAll('.entry-outcome').forEach(s=>{
+  s.addEventListener('change',e=>{
+    const i=e.target.dataset.i,val=e.target.value;
+    document.querySelector(`.manual-box[data-i="${i}"]`).classList.toggle('hidden',val!=='manual');
+    document.querySelector(`.be-box[data-i="${i}"]`).classList.toggle('hidden',val!=='be');
+    updateCalc(i);
+  });
+});
+document.querySelectorAll('.entry-manual,.entry-be').forEach(inp=>{
+  inp.addEventListener('input',e=>updateCalc(e.target.dataset.i));
+});
+function stepLot(i,dir){
+  const el=document.querySelector(`.entry-lot[data-i="${i}"]`);
+  let v=Math.round(((parseFloat(el.value)||0)+dir*0.01)*100)/100;
+  if(v<0) v=0;
+  el.value=v.toFixed(2);
+  updateCalc(i);
+  const fe=$('formError');if(fe) fe.style.display='none';
+}
+document.querySelectorAll('.lot-btn').forEach(btn=>{
+  let timer=null,rep=null,held=false;
+  const dir=()=>parseInt(btn.dataset.d);
+  const stop=()=>{clearTimeout(timer);clearInterval(rep);timer=null;rep=null;};
+  // tap/klik biasa: 1 langkah (andal di semua browser HP)
+  btn.addEventListener('click',e=>{
+    e.preventDefault();
+    if(held){held=false;return;}
+    stepLot(btn.dataset.i,dir());
+  });
+  // tahan: ulang otomatis
+  btn.addEventListener('pointerdown',()=>{
+    held=false;stop();
+    timer=setTimeout(()=>{held=true;rep=setInterval(()=>stepLot(btn.dataset.i,dir()),90);},450);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>btn.addEventListener(ev,stop));
+  btn.addEventListener('contextmenu',e=>e.preventDefault());
+});
+document.querySelectorAll('.entry-lot').forEach(inp=>{
+  inp.addEventListener('input',e=>updateCalc(e.target.dataset.i));
+});
+$('sl').addEventListener('input',()=>[1,2,3].forEach(updateCalc));
+$('pair').addEventListener('input',()=>{[1,2,3].forEach(updateCalc);refreshWarn();});
+
+function acctSym(){return currentAccount&&currentAccount.type==='USD'?'$':currentAccount&&currentAccount.type==='USC'?'¢':'¢';}
+function pipVal(){return currentAccount&&currentAccount.type==='USD'?0.1:10;}
+function moneyOf(pips,lot,pair){return pips*(parseFloat(lot)||0)*pipVal(pair);}
+function fmtMoney(m){
+  const sg=m<0?'-':(m>0?'+':'');
+  return sg+acctSym()+Math.abs(m).toLocaleString('id-ID',{maximumFractionDigits:2});
+}
+function entryPips(t,o,idx){
+  return (o.result==='tp'?t.sl*(idx+1):o.result==='manual'?o.manual:o.result==='sl'?-t.sl:o.be);
+}
+function tradeMoney(t){
+  return t.outcomes.reduce((a,o,idx)=>o.used?a+moneyOf(entryPips(t,o,idx),o.lot,t.pair):a,0);
+}
+function rawValue(i){
+  const sl=Math.abs(parseFloat($('sl').value)||0);
+  const val=document.querySelector(`.entry-outcome[data-i="${i}"]`).value;
+  if(val==='tp') return sl*i;
+  if(val==='manual') return parseFloat(document.querySelector(`.entry-manual[data-i="${i}"]`).value)||0;
+  if(val==='sl') return -sl;
+  return 0;
+}
+function outcomeValue(i){return rawValue(i);}
+function updateCalc(i){
+  const val=document.querySelector(`.entry-outcome[data-i="${i}"]`).value;
+  const r=rawValue(i),v=r;
+  let txt='';
+  if(val==='tp') txt=`TP RR = SL x ${i} = ${r.toFixed(0)} pips`;
+  else if(val==='manual') txt=`TP = ${(r>=0?'+':'')+r.toFixed(0)} pips`;
+  else if(val==='sl') txt=`SL = ${r.toFixed(0)} pips`;
+  const lot=parseFloat(document.querySelector(`.entry-lot[data-i="${i}"]`).value)||0;
+  $('calc'+i).textContent=txt+` | ${lot} lot = ${fmtMoney(moneyOf(v,lot,$('pair').value))}`;
+}
+
+function computeTotal(){
+  let total=0;
+  [1,2,3].forEach(i=>{
+    if(document.querySelector(`.entry-check[data-i="${i}"]`).checked) total+=outcomeValue(i);
+  });
+  return total;
+}
+
+$('tradeForm').addEventListener('invalid',e=>{
+  const el=e.target;
+  const body=el.closest('.entry-body');if(body) body.classList.remove('hidden');
+  const fe=$('formError');fe.style.display='block';
+  const nm=el.classList.contains('entry-lot')?'Lot (kelipatan 0,01)':(el.id==='sl'||el.classList.contains('entry-manual')||el.classList.contains('entry-be'))?'Pips (bilangan bulat, kelipatan 1)':'Isian';
+  fe.textContent=nm+': '+el.validationMessage;
+},true);
+$('tradeForm').addEventListener('input',()=>{$('formError').style.display='none';});
+$('tradeForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const total=computeTotal();
+  if(!editingId){
+    const warns=[];
+    const rk=riskInfo();
+    if(rk&&rk.over) warns.push(rk.over);
+    const dl=dailyLimitHit();
+    if(dl) warns.push(dl);
+    if(warns.length&&!confirm(warns.join('\n\n')+'\n\nTetap simpan trade ini?')) return;
+  }
+  const t={
+    id:Date.now(),
+    pair:$('pair').value.trim(),
+    datetime:$('datetime').value,
+    op:currentOp,
+    entryPoint:$('entryPoint').value,
+    sl:parseFloat($('sl').value)||0,
+    sesi:$('sesi').value,
+    tipe:$('tipe').value,
+    emosi:$('emosi').value,
+    outcomes:[1,2,3].map(i=>({
+      used:document.querySelector(`.entry-check[data-i="${i}"]`).checked,
+      result:document.querySelector(`.entry-outcome[data-i="${i}"]`).value,
+      manual:parseFloat(document.querySelector(`.entry-manual[data-i="${i}"]`).value)||0,
+      be:parseFloat(document.querySelector(`.entry-be[data-i="${i}"]`).value)||0,
+      lot:parseFloat(document.querySelector(`.entry-lot[data-i="${i}"]`).value)||0
+    })),
+    total,
+    reasons:[1,2,3,4,5].map(i=>({isian:document.querySelector(`.isian[data-i="${i}"]`).value.trim(),tf:document.querySelector(`.tf[data-i="${i}"]`).value})).filter(r=>r.isian||r.tf),
+    evaluation:$('evaluation').value.trim(),
+    tv:$('tv').value.trim(),
+    plan:$('plan').value
+  };
+  if(editingId){trades=trades.map(x=>x.id===editingId?Object.assign({},t,{id:editingId}):x);}else trades.unshift(t);
+  save();
+  closeModal();
+  const d=new Date(t.datetime);
+  viewDate=new Date(d.getFullYear(),d.getMonth(),1);
+  selectedDate=t.datetime.slice(0,10);
+  renderAll();
+});
+
+function fmtPips(n){return (n>=0?'+':'')+n.toFixed(1)+' pips';}
+
+function renderCalendar(){
+  const y=viewDate.getFullYear(),m=viewDate.getMonth();
+  $('monthTitle').textContent=new Intl.DateTimeFormat('id-ID',{month:'long',year:'numeric'}).format(viewDate);
+  const start=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),offset=start.getDay();
+  const today=localDateStr(new Date());
+  let html=['Min','Sen','Sel','Rab','Kam','Jum','Sab'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<offset;i++) html+='<div class="cal-day empty"></div>';
+  for(let day=1;day<=days;day++){
+    const ds=`${y}-${pad(m+1)}-${pad(day)}`;
+    const dayTrades=trades.filter(t=>t.datetime.slice(0,10)===ds);
+    const total=dayTrades.reduce((a,t)=>a+t.total,0);
+    let cls='cal-day';
+    if(ds===today) cls+=' today';
+    if(ds===selectedDate) cls+=' selected';
+    html+=`<div class="${cls}" onclick="selectDay('${ds}')"><span>${day}</span>${dayTrades.length?`<span class="pip mono">${total>=0?'+':''}${Math.round(total)}</span>`:''}</div>`;
+  }
+  $('calGrid').innerHTML=html;
+
+  const monthKey=`${y}-${pad(m+1)}`;
+  const mt=trades.filter(t=>t.datetime.startsWith(monthKey));
+  const wins=mt.filter(t=>t.total>0).length, totalTrades=mt.length;
+  const totalPips=mt.reduce((a,t)=>a+t.total,0);
+  const winratePct=totalTrades?Math.round(wins/totalTrades*100):0;
+  $('winratePct').textContent=winratePct+'%';
+  $('winCount').textContent=`${wins}/${totalTrades}`;
+  const pnlMoney=mt.reduce((a,t)=>a+tradeMoney(t),0);
+  const moneyTxt=Math.abs(pnlMoney).toLocaleString('id-ID',{maximumFractionDigits:2});
+  const sg=pnlMoney<0?'-':(pnlMoney>0?'+':'');
+  $('monthPips').textContent=`${sg}${acctSym()}${moneyTxt}(${Math.round(totalPips)}pips)`;
+  $('monthPips').style.color=pnlMoney<0?'var(--red)':'';
+  renderBalance();
+  const circumference=2*Math.PI*42;
+  $('donutFg').setAttribute('stroke-dasharray',circumference.toFixed(1));
+  $('donutFg').setAttribute('stroke-dashoffset',(circumference*(1-winratePct/100)).toFixed(1));
+}
+function balanceNow(){return (currentAccount.margin||0)+netCash()+trades.reduce((a,t)=>a+tradeMoney(t),0);}
+function renderBalance(){
+  if(!currentAccount) return;
+  const sym=currentAccount.type==='USD'?'$':currentAccount.type==='USC'?'¢':'';
+  const v=balanceNow().toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2});
+  $('balanceValue').textContent=sym+v+(currentAccount.type==='Demo'?' (Demo)':'');
+  renderDayLine();
+}
+function changeMonth(n){viewDate=new Date(viewDate.getFullYear(),viewDate.getMonth()+n,1);renderCalendar();}
+function selectDay(ds){selectedDate=ds;renderCalendar();renderHistory();}
+
+function renderHistory(){
+  const box=$('histList');
+  const mode=$('fMode').value,q=$('fText').value.trim().toLowerCase(),fp=$('fPsi').value;
+  const from=$('fFrom').value,to=$('fTo').value;
+  const filtering=mode==='all'||q||fp||from||to;
+  if(!selectedDate&&!filtering){box.innerHTML='<div class="empty-note">Klik tanggal pada kalender untuk melihat riwayat.</div>';$('histTitle').textContent='Riwayat';return;}
+  let list;
+  if(from||to){list=trades.filter(t=>{const d=t.datetime.slice(0,10);return (!from||d>=from)&&(!to||d<=to);});$('histTitle').textContent='Riwayat '+(from||'awal')+' s/d '+(to||'sekarang');}
+  else if(mode==='all'||!selectedDate){list=trades;$('histTitle').textContent='Riwayat (semua tanggal)';}
+  else{
+    const d=new Date(selectedDate+'T00:00:00');
+    $('histTitle').textContent='Riwayat '+new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'long',year:'numeric'}).format(d);
+    list=trades.filter(t=>t.datetime.slice(0,10)===selectedDate);
+  }
+  if(q) list=list.filter(t=>((t.pair||'')+' '+(t.evaluation||'')).toLowerCase().includes(q));
+  if(fp) list=list.filter(t=>t.emosi===fp);
+  if(!list.length){box.innerHTML='<div class="empty-note">Tidak ada trade yang cocok.</div>';return;}
+  if(from||to||q||fp){const sm=list.reduce((a,t)=>a+tradeMoney(t),0);$('histTitle').textContent+=' · '+list.length+' trade · '+fmtMoney(sm);}
+  const outcomeNames={tp:'TP RR',manual:'TP',sl:'SL',be:'BE'};
+  box.innerHTML=list.map(t=>{
+    const time=t.datetime.slice(11,16).replace(':','.');
+    const entryLines=t.outcomes.map((o,idx)=>{
+      if(!o.used) return '';
+      const v=entryPips(t,o,idx);
+      return `<div class="entry-line">Entry ${idx+1} <b>${outcomeNames[o.result]}</b> · ${v>=0?'+':''}${v.toFixed(1)}p · ${Number(o.lot)||0} lot · ${fmtMoney(moneyOf(v,o.lot,t.pair))}</div>`;
+    }).join('');
+    return `<div class="trade-card">
+      <div class="trade-top">
+        <div class="trade-id"><span class="pair-name">${esc(t.pair)}</span><span class="op-pill ${t.op==='Sell'?'sell':'buy'}">${t.op==='Sell'?'SELL':'BUY'}</span></div>
+        <span style="display:flex;gap:6px"><button class="del-btn" onclick="editTrade(${t.id})">✎</button><button class="del-btn" onclick="delTrade(${t.id})">✕</button></span>
+      </div>
+      <div class="trade-meta">${time} · entry ${esc(t.entryPoint)} · SL ${Number(t.sl)||0}p</div>
+      ${(t.sesi||t.tipe||t.emosi||t.tf)?`<div class="tag-row">${t.sesi?`<span class="tag">${esc(t.sesi)}</span>`:''}${t.tipe?`<span class="tag">${esc(t.tipe)}</span>`:''}${t.emosi?`<span class="tag">${esc(t.emosi)}</span>`:''}${t.tf?`<span class="tag">${esc(t.tf)}</span>`:''}</div>`:''}
+      ${extraHtml(t)}${entryLines}
+      <div class="total-line">Total: ${fmtMoney(tradeMoney(t))} (${fmtPips(t.total)})</div>
+      ${t.reasons&&t.reasons.length?`<div class="field-line"><b>Reason</b>${t.reasons.map(r=>`<div class="reason-view mono">${esc(r.isian||'-')}${r.tf?` <span class="tag">${esc(r.tf)}</span>`:''}</div>`).join('')}</div>`:''}
+      ${t.evaluation?`<div class="field-line"><b>Evaluasi</b>${esc(t.evaluation)}</div>`:''}
+      ${safeUrl(t.tv)?`<a class="tv-link" href="${esc(safeUrl(t.tv))}" target="_blank" rel="noopener">Lihat di TradingView →</a>`:''}
+    </div>`;
+  }).join('');
+}
+function delTrade(id){
+  const i=trades.findIndex(t=>t.id===id);if(i<0) return;
+  const t=trades[i];trades.splice(i,1);save();renderAll();
+  toast('Trade dihapus','Urungkan',()=>{if(!currentAccount) return;trades.splice(Math.min(i,trades.length),0,t);save();renderAll();});
+}
+
+function getPeriodStart(period){
+  const d=new Date();
+  if(period==='day') d.setHours(0,0,0,0);
+  else if(period==='week'){d.setDate(d.getDate()-6);d.setHours(0,0,0,0);}
+  else if(period==='month'){d.setDate(d.getDate()-29);d.setHours(0,0,0,0);}
+  else if(period==='year'){d.setDate(d.getDate()-364);d.setHours(0,0,0,0);}
+  return d;
+}
+let chartPts=[];
+function chartFmt(v){return chartUnit==='bal'?balSym()+v.toLocaleString('id-ID',{minimumFractionDigits:2,maximumFractionDigits:2}):chartUnit==='money'?fmtMoney(v):fmtPips(v);}
+function balSym(){return currentAccount&&currentAccount.type==='USD'?'$':currentAccount&&currentAccount.type==='USC'?'¢':'';}
+function renderChart(){
+  const start=getPeriodStart(chartPeriod).getTime();
+  const svg=$('progressChart'),totalEl=$('chartTotal'),tip=$('chartTip');
+  tip.textContent='Sentuh grafik untuk melihat detail';tip.className='chart-tip';chartPts=[];
+  const bal=chartUnit==='bal';
+  let ev=trades.map(t=>({t:new Date(t.datetime).getTime(),p:t.total,m:tradeMoney(t)}));
+  cashflows.forEach(c=>ev.push({t:new Date(c.date+'T00:00:00').getTime(),p:0,m:(c.type==='wd'?-1:1)*c.amount,cf:1}));
+  ev.sort((a,b)=>a.t-b.t);
+  let base=0;
+  if(bal){base=currentAccount.margin||0;ev.forEach(e=>{if(e.t<start) base+=e.m;});}
+  ev=ev.filter(e=>e.t>=start&&(bal||!e.cf));
+  if(!ev.length){svg.innerHTML='';tip.textContent='';totalEl.textContent='Belum ada trade pada periode ini';totalEl.classList.remove('hasval');return;}
+  let cum=base;const pts=[{t:start,v:base}];
+  ev.forEach(e=>{cum+=chartUnit==='pips'?e.p:e.m;pts.push({t:e.t,v:cum});});
+  totalEl.textContent=bal?chartFmt(cum)+' ('+fmtMoney(cum-base)+')':chartFmt(cum);
+  totalEl.classList.add('hasval');
+  const w=340,h=150,padL=38,padR=8,padT=10,padB=22;
+  const vals=pts.map(p=>p.v),lo=Math.min(...vals),hi=Math.max(...vals);
+  let min=bal?lo:Math.min(lo,0),max=bal?hi:Math.max(hi,0);
+  if(min===max){min-=10;max+=10;}
+  const xs=(w-padL-padR)/(pts.length-1);
+  const Y=v=>padT+(h-padT-padB)*(1-(v-min)/(max-min));
+  chartPts=pts.map((p,i)=>({x:padL+i*xs,y:Y(p.v),p}));
+  const fa=v=>Math.abs(v)>=1000?(v/1000).toFixed(1)+'k':String(Math.round(v*10)/10);
+  const fd=t=>new Intl.DateTimeFormat('id-ID',chartPeriod==='year'?{day:'numeric',month:'short',year:'2-digit'}:{day:'numeric',month:'short'}).format(new Date(t));
+  const gl=[max,min].concat(!bal&&min<0&&max>0?[0]:[]);
+  const grid=gl.map(v=>`<line x1="${padL}" x2="${w-padR}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}" style="stroke:var(--border)" stroke-dasharray="3 3"/><text x="${padL-4}" y="${(Y(v)+3).toFixed(1)}" text-anchor="end" font-size="9" style="fill:var(--muted)">${fa(v)}</text>`).join('');
+  const xl=`<text x="${padL}" y="${h-6}" font-size="9" style="fill:var(--muted)">${fd(pts[0].t)}</text><text x="${w-padR}" y="${h-6}" text-anchor="end" font-size="9" style="fill:var(--muted)">${fd(pts[pts.length-1].t)}</text>`;
+  const path=chartPts.map((c,i)=>(i?'L':'M')+c.x.toFixed(1)+','+c.y.toFixed(1)).join(' ');
+  svg.innerHTML=grid+xl+`<path d="${path}" fill="none" style="stroke:var(--fg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><g id="chartMark" style="display:none"><line id="cmLine" y1="${padT}" y2="${h-padB}" style="stroke:var(--muted)"/><circle id="cmDot" r="4" style="fill:var(--fg)"/></g>`;
+}
+function chartHover(e){
+  if(!chartPts.length) return;
+  const svg=$('progressChart'),m=$('chartMark');if(!m) return;
+  const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+  const x=pt.matrixTransform(svg.getScreenCTM().inverse()).x;
+  let best=0,bd=1e9;chartPts.forEach((c,i)=>{const d=Math.abs(c.x-x);if(d<bd){bd=d;best=i;}});
+  const c=chartPts[best];
+  m.style.display='';$('cmLine').setAttribute('x1',c.x);$('cmLine').setAttribute('x2',c.x);$('cmDot').setAttribute('cx',c.x);$('cmDot').setAttribute('cy',c.y);
+  const when=best===0?'Awal periode':new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(new Date(c.p.t));
+  $('chartTip').textContent=when+' · '+chartFmt(c.p.v);$('chartTip').className='chart-tip on';
+}
+$('progressChart').addEventListener('pointermove',chartHover);
+$('progressChart').addEventListener('pointerdown',chartHover);
+document.querySelectorAll('.period-tabs:not(.unit) button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    chartPeriod=b.dataset.p;
+    document.querySelectorAll('.period-tabs:not(.unit) button').forEach(x=>x.classList.toggle('active',x===b));
+    renderChart();
+  });
+});
+
+function openSettingsModal(){
+  $('settingsMargin').value=currentAccount.margin;
+  $('settingsTarget').value=currentAccount.dailyTarget||0;
+  $('settingsLoss').value=currentAccount.dailyLoss||0;
+  $('settingsRisk').value=currentAccount.riskPct==null?1:currentAccount.riskPct;
+  closeAccountModal();
+  $('settingsOverlay').classList.add('open');
+}
+function closeSettingsModal(){$('settingsOverlay').classList.remove('open');}
+function saveSettings(){
+  currentAccount.margin=parseFloat($('settingsMargin').value)||0;
+  currentAccount.dailyTarget=parseFloat($('settingsTarget').value)||0;
+  currentAccount.dailyLoss=parseFloat($('settingsLoss').value)||0;
+  currentAccount.riskPct=Math.max(0,parseFloat($('settingsRisk').value)||0);
+  if(window.API) window.API.saveProfile({margin:currentAccount.margin,dailyTarget:currentAccount.dailyTarget,dailyLoss:currentAccount.dailyLoss,riskPct:currentAccount.riskPct});
+  closeSettingsModal();
+  renderBalance();
+  renderCalendar();
+  refreshWarn();$('calcRisk').value=accRiskPct();updateRisk();renderAll();
+}
+let editingId=null,chartUnit='pips';
+let sesiManual=false;
+function autoSesi(dt){const d=new Date(dt);if(isNaN(d)) return '';const h=d.getUTCHours();return h>=7&&h<12?'London':h>=12&&h<21?'New York':'Asia';}
+$('datetime').addEventListener('input',()=>{if(!sesiManual) $('sesi').value=autoSesi($('datetime').value);});
+$('sesi').addEventListener('change',()=>{sesiManual=true;});
+function safeUrl(u){u=String(u||'').trim();return /^https?:\/\//i.test(u)?u:'';}
+$('fClear').addEventListener('click',()=>{$('fFrom').value='';$('fTo').value='';renderHistory();});
+let toastTimer=null,toastFn=null;
+function toast(msg,label,fn){
+  $('toastMsg').textContent=msg;toastFn=fn||null;
+  const b=$('toastBtn');b.textContent=label||'';b.style.display=label?'':'none';
+  $('toast').classList.add('show');clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{$('toast').classList.remove('show');toastFn=null;},7000);
+}
+$('toastBtn').addEventListener('click',()=>{const f=toastFn;toastFn=null;$('toast').classList.remove('show');clearTimeout(toastTimer);if(f) f();});
+(function(){let ly=window.scrollY;const f=document.querySelector('.fab');window.addEventListener('scroll',()=>{const y=window.scrollY,end=innerHeight+y>=document.documentElement.scrollHeight-8;f.classList.toggle('fab-hide',y>ly&&y>120&&!end);ly=y;},{passive:true});})();
+function renderDayLine(){
+  const el=$('dayLine');if(!el||!currentAccount) return;
+  const today=localDateStr(new Date());
+  const day=trades.filter(t=>t.datetime.slice(0,10)===today);
+  const m=day.reduce((a,t)=>a+tradeMoney(t),0);
+  const tg=currentAccount.dailyTarget||0,lm=currentAccount.dailyLoss||0;
+  if(!day.length&&!tg&&!lm){el.textContent='';el.className='day-line';return;}
+  let txt='Hari ini '+fmtMoney(m)+(tg?' / target '+acctSym()+tg:'')+(lm?' / batas loss '+acctSym()+lm:'');
+  let cls='day-line';
+  if(lm&&m<=-lm){txt+='\n⚠ Batas loss harian tercapai, berhenti trading dulu';cls+=' warn';}
+  else if(tg&&m>=tg){txt+='\n✔ Target harian tercapai';cls+=' ok';}
+  el.textContent=txt;el.style.whiteSpace='pre-line';el.className=cls;
+}
+function extraHtml(t){
+  let h='';
+  if(t.plan) h+=`<span class="mini-tag">Plan: ${esc(t.plan)}</span>`;
+  return h;
+}
+function editTrade(id){
+  const t=trades.find(x=>x.id===id);if(!t) return;
+  openModal();editingId=id;$('modalTitle').textContent='Edit Trade';
+  $('pair').value=t.pair||'';$('datetime').value=t.datetime||'';setOp(t.op||'Buy');
+  $('entryPoint').value=t.entryPoint||'';$('sl').value=t.sl||0;
+  $('sesi').value=t.sesi||'';$('tipe').value=t.tipe||'';$('emosi').value=t.emosi||'';
+  $('plan').value=t.plan||'';sesiManual=!!t.sesi;
+  const fire=(el,ev)=>el.dispatchEvent(new Event(ev,{bubbles:true}));
+  [1,2,3].forEach(i=>{
+    const o=(t.outcomes||[])[i-1]||{};
+    const chk=document.querySelector(`.entry-check[data-i="${i}"]`);
+    chk.checked=!!o.used;fire(chk,'change');
+    const sel=document.querySelector(`.entry-outcome[data-i="${i}"]`);
+    let res=o.result||'tp',man=o.manual||0;
+    if(res==='be'){res='manual';man=o.be||0;}
+    sel.value=res;fire(sel,'change');
+    document.querySelector(`.entry-manual[data-i="${i}"]`).value=man;
+    const lot=document.querySelector(`.entry-lot[data-i="${i}"]`);lot.value=(o.lot==null?0.01:o.lot);
+    updateCalc(i);
+  });
+  [1,2,3,4,5].forEach(i=>{
+    const r=(t.reasons||[])[i-1]||{};
+    document.querySelector(`.isian[data-i="${i}"]`).value=r.isian||'';
+    document.querySelector(`.tf[data-i="${i}"]`).value=r.tf||'';
+  });
+  $('evaluation').value=t.evaluation||'';$('tv').value=t.tv||'';
+}
+['fMode','fText','fPsi','fFrom','fTo'].forEach(id=>$(id).addEventListener('input',renderHistory));
+document.querySelectorAll('#unitTabs button').forEach(b=>b.addEventListener('click',()=>{
+  chartUnit=b.dataset.u;
+  document.querySelectorAll('#unitTabs button').forEach(x=>x.classList.toggle('active',x===b));
+  renderChart();
+}));
+function renderStats(){
+  const L=[...trades].sort((a,b)=>new Date(a.datetime)-new Date(b.datetime));
+  const grid=$('statGrid'),gt=$('groupTable');
+  if(!L.length){grid.innerHTML='<div class="empty-note" style="grid-column:1/3">Belum ada data.</div>';gt.innerHTML='';return;}
+  const ms=L.map(tradeMoney),W=L.filter(t=>t.total>0),Ls=L.filter(t=>t.total<0);
+  const gp=ms.filter(m=>m>0).reduce((a,b)=>a+b,0),gl=Math.abs(ms.filter(m=>m<0).reduce((a,b)=>a+b,0));
+  const avgW=W.length?W.reduce((a,t)=>a+t.total,0)/W.length:0,avgL=Ls.length?Math.abs(Ls.reduce((a,t)=>a+t.total,0))/Ls.length:0;
+  let cw=0,cl=0,mw=0,ml=0,eq=0,pk=0,dd=0;
+  L.forEach((t,i)=>{
+    if(t.total>0){cw++;cl=0;}else if(t.total<0){cl++;cw=0;}else{cw=0;cl=0;}
+    mw=Math.max(mw,cw);ml=Math.max(ml,cl);
+    eq+=ms[i];pk=Math.max(pk,eq);dd=Math.max(dd,pk-eq);
+  });
+  const net=ms.reduce((a,b)=>a+b,0);
+  const tile=(v,l)=>`<div class="stat-tile"><b>${v}</b><span>${l}</span></div>`;
+  grid.innerHTML=[
+    tile(L.length,'Total trade'),
+    tile(Math.round(W.length/L.length*100)+'%','Winrate'),
+    tile(fmtMoney(net),'Net PnL'),
+    tile(gl?(gp/gl).toFixed(2):(gp?'∞':'0'),'Profit factor'),
+    tile(avgW.toFixed(0)+'p / '+avgL.toFixed(0)+'p','Rata menang / kalah'),
+    tile(avgL?(avgW/avgL).toFixed(2):'-','Rata-rata RR'),
+    tile(mw+' / '+ml,'Streak menang / kalah'),
+    tile(acctSym()+dd.toLocaleString('id-ID',{maximumFractionDigits:2}),'Drawdown maks')
+  ].join('');
+  renderGroups(L);
+}
+function renderGroups(L){
+  const k=$('gBy').value,map={};
+  L.forEach(t=>{
+    let key=t[k]; if(k==='pair'&&key) key=key.toUpperCase();
+    key=key||'(kosong)';
+    const g=map[key]||(map[key]={n:0,w:0,m:0});
+    g.n++;if(t.total>0)g.w++;g.m+=tradeMoney(t);
+  });
+  const rows=Object.entries(map).sort((a,b)=>b[1].m-a[1].m);
+  $('groupTable').innerHTML='<div class="g-row head"><span>Nama</span><span>Trade</span><span>WR</span><span>PnL</span></div>'+
+    rows.map(([n,g])=>`<div class="g-row"><span>${esc(n)}</span><span>${g.n}</span><span>${Math.round(g.w/g.n*100)}%</span><span style="color:${g.m<0?'var(--red)':'var(--fg)'}">${fmtMoney(g.m)}</span></div>`).join('');
+}
+$('gBy').addEventListener('change',()=>renderStats());
+// ---- backup ----
+function bkMsg(t){$('bkMsg').textContent=t;}
+function bkData(){return JSON.stringify({app:'jurnal-trade',v:2,exported:new Date().toISOString(),trades,cashflows},null,1);}
+function dl(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove();}
+$('bkJson').onclick=()=>{try{dl('jurnal-trade-backup.json',bkData(),'application/json');bkMsg('Backup diunduh. Kalau tidak muncul, pakai Salin JSON.');}catch(e){bkMsg('Unduh gagal, pakai Salin JSON.');}};
+$('bkCopy').onclick=async()=>{
+  const txt=bkData();
+  try{await navigator.clipboard.writeText(txt);bkMsg('JSON disalin ke clipboard. Simpan di Catatan/WhatsApp.');}
+  catch(e){const ta=$('bkText');ta.style.display='block';ta.value=txt;ta.select();try{document.execCommand('copy');}catch(_){}bkMsg('Teks backup ada di kotak, salin manual.');}
+};
+function pdfAscii(x){return String(x==null?'':x).replace(/¢/g,'c').replace(/[–—]/g,'-').replace(/[^\x20-\x7e]/g,'').replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');}
+function buildPdf(){
+  const W=842,H=595,M=36,LH=15;
+  const sym=currentAccount&&currentAccount.type==='USD'?'$':'c';
+  const mny=m=>(m<0?'-':m>0?'+':'')+sym+Math.abs(m).toLocaleString('en-US',{maximumFractionDigits:2});
+  const pf=$('pdfFrom').value,pt=$('pdfTo').value;
+  const L=[...trades].filter(t=>{const d=t.datetime.slice(0,10);return (!pf||d>=pf)&&(!pt||d<=pt);}).sort((a,b)=>new Date(a.datetime)-new Date(b.datetime));
+  const wins=L.filter(t=>t.total>0).length;
+  const net=L.reduce((a,t)=>a+tradeMoney(t),0);
+  const cols=[['Tanggal',0,100],['Pair',100,70],['Posisi',170,45],['Entry',215,60],['SL',275,35],['Lot',310,70],['Pips',380,50],['PnL',430,85],['Sesi',515,60],['Psikologi',575,80],['Plan',655,40],['Evaluasi',695,106]];
+  const maxCh=w=>Math.floor(w/4.4);
+  const pages=[];let cur=null,y=0;
+  const np=()=>{cur=[];pages.push(cur);y=H-M;};
+  const txt=(x,yy,t,sz,bold)=>cur.push(`BT /${bold?'F2':'F1'} ${sz} Tf ${x} ${yy} Td (${pdfAscii(t)}) Tj ET`);
+  const hdr=()=>{cols.forEach(c=>txt(M+c[1],y,c[0],8,true));cur.push(`${M} ${y-4} m ${W-M} ${y-4} l 0.5 w S`);y-=LH;};
+  np();
+  txt(M,y,'Jurnal Trade - '+(currentAccount?currentAccount.username:''),14,true);y-=18;
+  txt(M,y,'Dicetak: '+new Date().toLocaleString('id-ID')+'  |  Akun: '+(currentAccount?currentAccount.type:'')+((pf||pt)?'  |  Periode: '+(pf||'awal')+' s/d '+(pt||'sekarang'):''),9);y-=14;
+  txt(M,y,`Total trade: ${L.length}   Winrate: ${L.length?Math.round(wins/L.length*100):0}%   Net PnL: ${mny(net)}   Balance: ${sym}${balanceNow().toLocaleString('en-US',{maximumFractionDigits:2})}`,9);y-=22;
+  hdr();
+  L.forEach(t=>{
+    if(y<M+10){np();hdr();}
+    const lots=t.outcomes.filter(o=>o.used).map(o=>o.lot).join('/');
+    const row=[t.datetime.replace('T',' '),(t.pair||'').toUpperCase(),t.op,t.entryPoint,t.sl,lots,Math.round(t.total*10)/10,mny(tradeMoney(t)),t.sesi,t.emosi,t.plan,t.evaluation];
+    row.forEach((v,i)=>{const c=cols[i];let str=String(v==null?'':v);const mc=maxCh(c[2]);if(str.length>mc) str=str.slice(0,mc-1)+'.';txt(M+c[1],y,str,8);});
+    y-=LH;
+  });
+  if(!L.length){txt(M,y,'Belum ada trade.',9);}
+  // rakit PDF
+  const objs=[];const add=x=>{objs.push(x);return objs.length;};
+  add('<< /Type /Catalog /Pages 2 0 R >>');add('PLACEHOLDER');
+  add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+  const kids=[];
+  pages.forEach((pg,i)=>{
+    pg.push(`BT /F1 7 Tf ${W-M-60} 18 Td (Hal ${i+1}/${pages.length}) Tj ET`);
+    const content=pg.join('\n');
+    const cid=add(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+    const pid=add(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${cid} 0 R >>`);
+    kids.push(pid+' 0 R');
+  });
+  objs[1]=`<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${kids.length} >>`;
+  let out='%PDF-1.4\n';const offs=[];
+  objs.forEach((o,i)=>{offs.push(out.length);out+=`${i+1} 0 obj\n${o}\nendobj\n`;});
+  const xr=out.length;
+  out+=`xref\n0 ${objs.length+1}\n0000000000 65535 f \n`+offs.map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('');
+  out+=`trailer\n<< /Size ${objs.length+1} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`;
+  return out;
+}
+$('bkPdf').onclick=()=>{
+  try{dl('jurnal-trade.pdf',buildPdf(),'application/pdf');bkMsg('PDF diunduh.');}catch(e){bkMsg('Unduh PDF gagal.');}
+};
+function importText(txt){
+  let d;try{d=JSON.parse(txt);}catch(e){bkMsg('Format JSON tidak valid.');return;}
+  const arr=Array.isArray(d)?d:d.trades;
+  if(!Array.isArray(arr)){bkMsg('Data trade tidak ditemukan.');return;}
+  const have=new Set(trades.map(t=>t.id));
+  const okT=t=>t&&Number.isFinite(t.id)&&typeof t.datetime==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(t.datetime)&&Array.isArray(t.outcomes)&&Number.isFinite(t.total)&&Number.isFinite(t.sl)&&t.outcomes.every(o=>o&&Number.isFinite(+o.lot)&&Number.isFinite(+o.manual||0)&&Number.isFinite(+o.be||0));
+  const strs=x=>String(x==null?'':x);
+  const norm=t=>({id:t.id,pair:strs(t.pair),datetime:t.datetime,op:t.op==='Sell'?'Sell':'Buy',entryPoint:strs(t.entryPoint),sl:+t.sl,sesi:strs(t.sesi),tipe:strs(t.tipe),emosi:strs(t.emosi),plan:strs(t.plan),
+    outcomes:t.outcomes.map(o=>({used:!!o.used,result:['tp','manual','sl','be'].includes(o.result)?o.result:'tp',manual:+o.manual||0,be:+o.be||0,lot:+o.lot})),
+    total:+t.total,
+    reasons:(Array.isArray(t.reasons)?t.reasons:[]).filter(r=>r&&typeof r==='object').map(r=>({isian:strs(r.isian),tf:strs(r.tf)})),
+    evaluation:strs(t.evaluation),tv:strs(t.tv)});
+  const add=arr.filter(t=>okT(t)&&!have.has(t.id)).map(norm);
+  const haveC=new Set(cashflows.map(c=>c.id));
+  const addC=(Array.isArray(d.cashflows)?d.cashflows:[]).filter(c=>c&&Number.isFinite(c.id)&&/^\d{4}-\d\d-\d\d$/.test(c.date)&&(c.type==='dep'||c.type==='wd')&&Number.isFinite(c.amount)&&!haveC.has(c.id));
+  if(!add.length&&!addC.length){bkMsg('Tidak ada data baru untuk diimpor.');return;}
+  if(!confirm('Impor '+add.length+' trade dan '+addC.length+' catatan setor/tarik baru?')) return;
+  if(add.length){trades=add.concat(trades).sort((a,b)=>new Date(b.datetime)-new Date(a.datetime));save();}
+  if(addC.length){cashflows=cashflows.concat(addC);saveCash();}
+  renderAll();$('bkText').value='';bkMsg(add.length+' trade dan '+addC.length+' setor/tarik berhasil diimpor.');
+}
+$('bkImport').onclick=()=>{
+  const ta=$('bkText');
+  if(ta.style.display!=='none'&&ta.value.trim()){importText(ta.value);return;}
+  ta.style.display='block';$('bkFile').click();
+};
+$('bkFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importText(r.result);r.readAsText(f);e.target.value='';};
+
+// ---- setor / tarik dana ----
+let cfType='dep';
+function setCfType(t){cfType=t;document.querySelectorAll('.cf-btn').forEach(b=>b.classList.toggle('active',b.dataset.t===t));}
+function openCfModal(){
+  $('cfDate').value=localDateStr(new Date());$('cfAmount').value='';$('cfNote').value='';
+  $('cfError').classList.remove('show');setCfType('dep');renderCfList();
+  $('cfOverlay').classList.add('open');
+}
+function closeCfModal(){$('cfOverlay').classList.remove('open');}
+function addCash(){
+  const amt=parseFloat($('cfAmount').value),err=$('cfError');
+  err.classList.remove('show');
+  if(!(amt>0)){err.textContent='Jumlah harus lebih dari 0.';err.classList.add('show');return;}
+  if(!$('cfDate').value){err.textContent='Tanggal wajib diisi.';err.classList.add('show');return;}
+  if(cfType==='wd'&&amt>balanceNow()&&!confirm('Jumlah tarik lebih besar dari balance saat ini. Tetap simpan?')) return;
+  cashflows.unshift({id:Date.now(),type:cfType,amount:amt,date:$('cfDate').value,note:$('cfNote').value.trim()});
+  cashflows.sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  saveCash();$('cfAmount').value='';$('cfNote').value='';
+  renderCfList();renderAll();
+}
+function delCash(id){
+  const i=cashflows.findIndex(c=>c.id===id);if(i<0) return;
+  const c=cashflows[i];cashflows.splice(i,1);saveCash();renderCfList();renderAll();
+  toast('Catatan dihapus','Urungkan',()=>{if(!currentAccount) return;cashflows.splice(Math.min(i,cashflows.length),0,c);saveCash();renderCfList();renderAll();});
+}
+function renderCfList(){
+  const box=$('cfList');
+  if(!cashflows.length){box.innerHTML='<div class="empty-note">Belum ada catatan setor/tarik.</div>';return;}
+  const net=netCash();
+  box.innerHTML=`<div class="calc-text" style="margin-bottom:6px">Total bersih: ${fmtMoney(net)}</div>`+cashflows.map(c=>`<div class="cf-row"><div>${c.type==='dep'?'Setor':'Tarik'}<small>${esc(c.date)}${c.note?' · '+esc(c.note):''}</small></div><div style="display:flex;align-items:center;gap:8px"><b class="mono ${c.type}">${c.type==='dep'?'+':'-'}${acctSym()}${c.amount.toLocaleString('id-ID',{maximumFractionDigits:2})}</b><button class="del-btn" onclick="delCash(${c.id})">✕</button></div></div>`).join('');
+}
+
+// ---- kalkulator risiko ----
+function lotPerPip(pair){return moneyOf(1,1,pair);}
+function riskCalc(pct,sl,pair){
+  if(!currentAccount) return null;
+  const bal=balanceNow();
+  if(!(pct>0)||!(sl>0)||!(bal>0)) return null;
+  const riskMoney=bal*pct/100;
+  const maxLot=Math.floor(riskMoney/(sl*lotPerPip(pair))*100+1e-9)/100;
+  return {pct,sl,bal,riskMoney,maxLot};
+}
+function accRiskPct(){return currentAccount&&currentAccount.riskPct!=null?currentAccount.riskPct:1;}
+// pemeriksaan overlot untuk trade di form (pakai risiko % dari Pengaturan)
+function riskInfo(){
+  const r=riskCalc(accRiskPct(),Math.abs(parseFloat($('sl').value)||0),$('pair').value);
+  if(!r) return null;
+  const usedLot=[1,2,3].filter(i=>document.querySelector(`.entry-check[data-i="${i}"]`).checked)
+    .reduce((a,i)=>a+(parseFloat(document.querySelector(`.entry-lot[data-i="${i}"]`).value)||0),0);
+  const usedRisk=moneyOf(r.sl,usedLot,$('pair').value);
+  let over='';
+  if(usedRisk>r.riskMoney*1.0001) over=`Overlot: risiko ${acctSym()}${usedRisk.toLocaleString('id-ID',{maximumFractionDigits:2})} (${(usedRisk/r.bal*100).toFixed(1)}% balance) melebihi batas ${r.pct}% (lot maks ${r.maxLot.toFixed(2)}).`;
+  return Object.assign({usedLot,usedRisk,over},r);
+}
+// kartu kalkulator di halaman utama
+function updateRisk(){
+  const out=$('riskOut');if(!out||!currentAccount) return;
+  const r=riskCalc(parseFloat($('calcRisk').value)||0,Math.abs(parseFloat($('calcSl').value)||0));
+  if(!r){out.className='risk-out';out.textContent='Isi risiko % dan SL (pips). Balance harus > 0.';return;}
+  const f=n=>n.toLocaleString('id-ID',{maximumFractionDigits:2});
+  out.className='risk-out';
+  out.innerHTML=`Risiko ${r.pct}% dari ${acctSym()}${f(r.bal)} = <b>${acctSym()}${f(r.riskMoney)}</b><br>Lot maksimal (SL ${r.sl}p): <b>${r.maxLot.toFixed(2)}</b>`;
+}
+function initCalc(){if(currentAccount&&$('calcRisk').value==='') $('calcRisk').value=accRiskPct();}
+['calcRisk','calcSl'].forEach(id=>$(id).addEventListener('input',updateRisk));
+['sl'].forEach(id=>$(id).addEventListener('input',refreshWarn));
+document.querySelectorAll('.entry-lot,.entry-check').forEach(el=>el.addEventListener(el.type==='checkbox'?'change':'input',refreshWarn));
+document.querySelectorAll('.lot-btn').forEach(b=>b.addEventListener('click',()=>setTimeout(refreshWarn,0)));
+
+// ---- peringatan overlot & batas loss ----
+function dailyLimitHit(){
+  if(!currentAccount||!currentAccount.dailyLoss) return '';
+  const today=localDateStr(new Date());
+  const m=trades.filter(t=>t.datetime.slice(0,10)===today).reduce((a,t)=>a+tradeMoney(t),0);
+  return m<=-currentAccount.dailyLoss?'Batas loss harian sudah tercapai. Sebaiknya berhenti trading hari ini.':'';
+}
+function refreshWarn(){
+  const el=$('riskWarn');if(!el) return;
+  const w=[],r=riskInfo(),dl=dailyLimitHit();
+  if(r&&r.over) w.push('⚠ '+r.over);
+  if(dl) w.push('⚠ '+dl);
+  el.className='risk-out'+(w.length?' warn':'');
+  el.innerHTML=w.map(esc).join('<br>');
+}
+
+// ---- ringkasan mingguan / bulanan ----
+let sumMode='week',sumOff=0;
+function sumRange(){
+  const now=new Date();
+  if(sumMode==='week'){
+    const d=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+    d.setDate(d.getDate()-((d.getDay()+6)%7)+sumOff*7);
+    const e=new Date(d);e.setDate(e.getDate()+7);
+    const last=new Date(e);last.setDate(last.getDate()-1);
+    const f=x=>new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short'}).format(x);
+    return {s:d,e,label:f(d)+' – '+f(last)+' '+last.getFullYear(),name:sumOff===0?'Minggu ini':sumOff===-1?'Minggu lalu':'Minggu ini'.replace('ini','tsb')};
+  }
+  const s=new Date(now.getFullYear(),now.getMonth()+sumOff,1),e=new Date(now.getFullYear(),now.getMonth()+sumOff+1,1);
+  return {s,e,label:new Intl.DateTimeFormat('id-ID',{month:'long',year:'numeric'}).format(s),name:sumOff===0?'Bulan ini':sumOff===-1?'Bulan lalu':'Bulan tsb'};
+}
+function sumMove(n){sumOff=Math.min(0,sumOff+n);renderSummary();}
+document.querySelectorAll('#sumTabs button').forEach(b=>b.addEventListener('click',()=>{
+  sumMode=b.dataset.m;sumOff=0;
+  document.querySelectorAll('#sumTabs button').forEach(x=>x.classList.toggle('active',x===b));
+  renderSummary();
+}));
+function renderSummary(){
+  if(!currentAccount) return;
+  const R=sumRange(),box=$('sumBody');
+  $('sumLabel').textContent=R.label;
+  const L=trades.filter(t=>{const d=new Date(t.datetime);return d>=R.s&&d<R.e;});
+  const sd=localDateStr(R.s),ed=localDateStr(R.e);
+  const cf=cashflows.filter(c=>c.date>=sd&&c.date<ed);
+  const cfNet=cf.reduce((a,c)=>a+(c.type==='wd'?-1:1)*c.amount,0);
+  const cfLine=cf.length?`<div class="sum-line"><b>Setor / tarik</b>${fmtMoney(cfNet)} bersih (${cf.length} catatan)</div>`:'';
+  if(!L.length){box.innerHTML='<div class="empty-note">Belum ada trade pada periode ini.</div>'+cfLine;return;}
+  const wins=L.filter(t=>t.total>0).length,wr=Math.round(wins/L.length*100);
+  const money=L.reduce((a,t)=>a+tradeMoney(t),0),pips=L.reduce((a,t)=>a+t.total,0);
+  const cnt=(keyFn)=>{const m={};L.forEach(t=>{const k=keyFn(t);if(!k) return;const g=m[k]||(m[k]={n:0,m:0});g.n++;g.m+=tradeMoney(t);});return Object.entries(m);};
+  const emo=cnt(t=>t.emosi),pairs=cnt(t=>(t.pair||'').toUpperCase());
+  const topEmo=emo.sort((a,b)=>b[1].n-a[1].n)[0];
+  const worstEmo=[...emo].filter(e=>e[1].m<0).sort((a,b)=>a[1].m-b[1].m)[0];
+  const topPair=pairs.sort((a,b)=>b[1].n-a[1].n)[0];
+  const days={};L.forEach(t=>{const k=t.datetime.slice(0,10);days[k]=(days[k]||0)+tradeMoney(t);});
+  const dayArr=Object.entries(days).sort((a,b)=>b[1]-a[1]);
+  const best=dayArr[0],worst=dayArr[dayArr.length-1];
+  const fd=ds=>new Intl.DateTimeFormat('id-ID',{weekday:'short',day:'numeric',month:'short'}).format(new Date(ds+'T00:00:00'));
+  const plan=L.filter(t=>t.plan),planYa=plan.filter(t=>t.plan==='Ya');
+  const head=`${R.name} winrate ${wr}% (${wins}/${L.length} trade), PnL ${fmtMoney(money)}${topEmo?`, emosi paling sering: ${topEmo[0]} (${topEmo[1].n}x)`:''}.`;
+  const tile=(v,l,c)=>`<div class="stat-tile"><b${c?` style="color:${c}"`:''}>${v}</b><span>${l}</span></div>`;
+  const line=(l,v)=>`<div class="sum-line"><b>${l}</b>${v}</div>`;
+  box.innerHTML=`<div class="sum-headline">${esc(head)}</div>
+    <div class="stat-grid">${tile(L.length,'Total trade')}${tile(wr+'%','Winrate')}${tile(fmtMoney(money),'Net PnL',money<0?'var(--red)':'')}${tile((pips>=0?'+':'')+pips.toFixed(0)+'p','Net pips')}</div>`+
+    (topEmo?line('Psikologi tersering',`${esc(topEmo[0])} (${topEmo[1].n}x, ${fmtMoney(topEmo[1].m)})`):'')+
+    (worstEmo?line('Psikologi paling merugikan',`${esc(worstEmo[0])} (${worstEmo[1].n}x, ${fmtMoney(worstEmo[1].m)})`):'')+
+    (topPair?line('Pair tersering',`${esc(topPair[0])} (${topPair[1].n}x, ${fmtMoney(topPair[1].m)})`):'')+
+    (best&&best[1]>0?line('Hari terbaik',`${fd(best[0])} ${fmtMoney(best[1])}`):'')+
+    (worst&&worst[1]<0?line('Hari terburuk',`${fd(worst[0])} ${fmtMoney(worst[1])}`):'')+
+    (plan.length?line('Ikut trading plan',`${Math.round(planYa.length/plan.length*100)}% (${planYa.length}/${plan.length} trade)`):'')+cfLine;
+}
+
+function renderAll(){renderCalendar();renderHistory();renderChart();renderStats();renderSummary();initCalc();updateRisk();}
+resetForm();
+function startJournal(){
+  $('appMain').style.display='block';
+  renderAll();
+}
+function stopJournal(){ $('appMain').style.display='none'; }
+window.startJournal=startJournal;
+window.stopJournal=stopJournal;
+window.resetJournal=function(){selectedDate=null;viewDate=new Date();sumOff=0;editingId=null;};
+
+/* --- jembatan ke fitur signal / komunitas --- */
+window.setJournalData=function(tr,cf){trades=Array.isArray(tr)?tr:[];cashflows=Array.isArray(cf)?cf:[];};
+window.journalFromSignal=function(sig){
+  if(typeof go==='function') go('journal');
+  openModal();
+  editingId=null;
+  $('modalTitle').textContent='Trade dari Signal';
+  resetForm();
+  $('pair').value=String(sig.pair||'').toUpperCase();
+  const now=new Date();
+  $('datetime').value=`${localDateStr(now)}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  setOp(sig.side==='Sell'?'Sell':'Buy');
+  if(sig.entry!=null&&sig.entry!=='') $('entryPoint').value=sig.entry;
+  const slP=window.pipsBetween?pipsBetween(sig.pair,sig.entry,sig.sl):null;
+  if(slP!=null&&slP>0) $('sl').value=String(Math.round(slP));
+  const tpP=window.pipsBetween?pipsBetween(sig.pair,sig.entry,sig.tp1):null;
+  const sel=document.querySelector('.entry-outcome[data-i="1"]');
+  if(tpP!=null&&tpP>0){
+    sel.value='manual';sel.dispatchEvent(new Event('change',{bubbles:true}));
+    document.querySelector('.entry-manual[data-i="1"]').value=String(Math.round(tpP));
+  }else{
+    sel.value='tp';sel.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+  $('sesi').value=autoSesi($('datetime').value);
+  if(sig.timeframe) $('tv').value=$('tv').value;
+  [1,2,3].forEach(updateCalc);
+  refreshWarn();
+  toast('Signal dimasukkan ke form jurnal. Lengkapi lalu simpan.');
+};
+
+</script>
+<script>
+/* js/signals.js */
+/* ===== TradeHub — fitur signal trading ===== */
+let SIGNALS = [];
+let sigFilter = 'all';
+let sigOp = 'Buy';
+let editingSignalId = null;
+let MY_CODES = [];
+
+const STATUS_LABEL = { active: 'ACTIVE', tp: 'HIT TP', sl: 'HIT SL', be: 'BE', closed: 'CLOSED' };
+
+function relTime(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return s + ' dtk lalu';
+  if (s < 3600) return Math.floor(s / 60) + ' mnt lalu';
+  if (s < 86400) return Math.floor(s / 3600) + ' jam lalu';
+  return Math.floor(s / 86400) + ' hr lalu';
+}
+
+async function loadSignals(silent) {
+  if (!ME) return;
+  const box = $('signalList');
+  if (!silent && box) box.innerHTML = '<div class="empty-note">Memuat signal…</div>';
+  try {
+    const d = await API.call('GET', '/api/signals?status=' + sigFilter);
+    SIGNALS = d.signals || [];
+    if (ME.role === 'dev') {
+      try { const c = await API.call('GET', '/api/codes'); MY_CODES = c.codes || []; } catch (e) { MY_CODES = []; }
+    }
+    renderSignals();
+    updateSigBadge();
+    $('sigUpdated').textContent = 'Diperbarui ' + new Date().toLocaleTimeString('id-ID') + ' · ' + SIGNALS.length + ' signal · refresh otomatis tiap 20 detik';
+  } catch (e) {
+    if (!silent && box) box.innerHTML = '<div class="empty-note">Gagal memuat signal: ' + esc(e.message) + '</div>';
+  }
+}
+
+function updateSigBadge() {
+  let seen = 0;
+  try { seen = Number(localStorage.getItem(sigSeenKey()) || 0); } catch (e) { }
+  const n = SIGNALS.filter(s => s.createdAt > seen).length;
+  const tab = document.querySelector('.tab[data-page="signals"]');
+  if (tab) tab.textContent = 'Signal' + (n ? ' (' + n + ')' : '');
+  if (CURRENT_PAGE === 'signals' && SIGNALS.length) {
+    const mx = Math.max.apply(null, SIGNALS.map(s => s.createdAt).concat([0]));
+    try { localStorage.setItem(sigSeenKey(), String(mx)); } catch (e) { }
+  }
+}
+
+function renderConnCard() {
+  const box = $('connCard');
+  if (!ME) { box.innerHTML = ''; return; }
+  if (ME.role === 'dev') {
+    const active = MY_CODES.filter(c => c.active).length;
+    const members = MY_CODES.reduce((a, c) => a + c.members, 0);
+    box.innerHTML = `<div class="hist-title">Status pengirim</div>
+      <div class="sig-meta" style="font-family:inherit">Anda terdaftar sebagai <b>Dev</b>. ${MY_CODES.length} kode komunitas (${active} aktif) · ${members} member terhubung.</div>
+      <div class="sig-actions"><button class="chip" onclick="go('community')">Kelola kode &amp; member</button></div>`;
+    return;
+  }
+  if (CODE) {
+    box.innerHTML = `<div class="hist-title">Terhubung ke</div>
+      <div style="font-weight:800;font-size:15px;margin-top:4px">${esc(CODE.label)}</div>
+      <div class="sig-meta" style="font-family:inherit">Dev: <b>${esc(CODE.devName)}</b> · kode <b>${esc(CODE.code)}</b></div>
+      <div class="sig-actions"><button class="chip" onclick="go('community')">Ganti / putuskan koneksi</button></div>`;
+    return;
+  }
+  box.innerHTML = `<div class="hist-title">Belum terhubung</div>
+    <div class="sig-meta" style="font-family:inherit">Masukkan kode komunitas dari Dev Anda untuk menerima signal.</div>
+    <div class="join-row"><input id="quickCode" placeholder="KODE DEV" autocomplete="off" spellcheck="false"><button class="btn solid" style="flex:none;padding:12px 16px" onclick="quickJoin()">Hubungkan</button></div>
+    <div class="role-hint warn" id="quickCodeErr"></div>`;
+}
+async function quickJoin() {
+  const v = ($('quickCode').value || '').trim();
+  if (!v) return;
+  try {
+    const d = await API.call('POST', '/api/join', { code: v });
+    CODE = d.code;
+    toast2('Berhasil terhubung ke ' + (d.code ? d.code.label : 'komunitas'));
+    await refreshMe();
+    renderConnCard(); renderSignals();
+  } catch (e) {
+    const el = $('quickCodeErr'); if (el) el.textContent = e.message;
+  }
+}
+
+async function refreshMe() {
+  const d = await API.call('GET', '/api/me');
+  ME = d.user; currentAccount = d.user; CODE = d.code; MEMBERS = d.members || [];
+  renderAkun();
+}
+
+function renderSignals() {
+  renderConnCard();
+  const box = $('signalList');
+  const list = SIGNALS;
+  if (!list.length) {
+    box.innerHTML = ME.role === 'dev'
+      ? '<div class="empty-note">Belum ada signal. Tekan tombol <b>+ Kirim Signal</b> di bawah untuk mengirim signal pertama Anda.</div>'
+      : (CODE ? '<div class="empty-note">Belum ada signal dari Dev pada filter ini.</div>'
+        : '<div class="empty-note">Belum terhubung ke komunitas. Masukkan kode Dev di kartu atas.</div>');
+    return;
+  }
+  box.innerHTML = list.map(sigCard).join('');
+}
+
+function sigCard(s) {
+  const pair = esc((s.pair || '').toUpperCase());
+  const buy = s.side !== 'Sell';
+  const status = STATUS_LABEL[s.status] || 'ACTIVE';
+  const lv = [
+    `<div class="lvl">ENTRY<b>${fmtNum(s.entry)}</b><small></small></div>`,
+    `<div class="lvl sl">SL<b>${fmtNum(s.sl)}</b><small>${pipsBetween(s.pair, s.entry, s.sl) != null ? pipsBetween(s.pair, s.entry, s.sl).toFixed(1) + ' p' : ''}</small></div>`,
+    `<div class="lvl tp">TP 1<b>${fmtNum(s.tp1)}</b><small>${pipsBetween(s.pair, s.entry, s.tp1) != null ? pipsBetween(s.pair, s.entry, s.tp1).toFixed(1) + ' p' : ''}</small></div>`,
+    `<div class="lvl tp">TP 2<b>${fmtNum(s.tp2)}</b><small>${pipsBetween(s.pair, s.entry, s.tp2) != null ? pipsBetween(s.pair, s.entry, s.tp2).toFixed(1) + ' p' : ''}</small></div>`,
+    `<div class="lvl tp">TP 3<b>${fmtNum(s.tp3)}</b><small>${pipsBetween(s.pair, s.entry, s.tp3) != null ? pipsBetween(s.pair, s.entry, s.tp3).toFixed(1) + ' p' : ''}</small></div>`
+  ].join('');
+
+  let actions = '';
+  if (ME.role === 'dev') {
+    const res = s.result || '';
+    actions = `<div class="sig-actions">
+      <button class="chip ${res === 'TP1' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','tp','TP1')">TP 1</button>
+      <button class="chip ${res === 'TP2' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','tp','TP2')">TP 2</button>
+      <button class="chip ${res === 'TP3' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','tp','TP3')">TP 3</button>
+      <button class="chip ${s.status === 'sl' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','sl','SL')">SL</button>
+      <button class="chip ${s.status === 'be' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','be','BE')">BE</button>
+      <button class="chip ${s.status === 'closed' ? 'on' : ''}" onclick="setSignalStatus('${s.id}','closed','Closed')">Tutup</button>
+      ${s.status !== 'active' ? `<button class="chip ghost" onclick="setSignalStatus('${s.id}','active','')">Aktifkan lagi</button>` : ''}
+      <button class="chip ghost" onclick="editSignal('${s.id}')">✎ Edit</button>
+      <button class="chip danger" onclick="removeSignal('${s.id}')">✕</button>
+    </div>`;
+  } else {
+    actions = `<div class="sig-actions"><button class="chip" onclick="signalToJournal('${s.id}')">Catat ke Jurnal</button></div>`;
+  }
+
+  return `<div class="sig-card">
+    <div class="sig-top">
+      <div class="sig-id">
+        <span class="pair-name">${pair}</span>
+        <span class="op-pill ${buy ? 'buy' : 'sell'}">${buy ? 'BUY' : 'SELL'}</span>
+        ${s.timeframe ? `<span class="tag">${esc(s.timeframe)}</span>` : ''}
+        <span class="sig-status st-${esc(s.status)}">${esc(status)}${s.result && s.status !== 'active' && s.status === 'tp' ? ' ' + esc(s.result) : ''}</span>
+      </div>
+      ${ME.role === 'dev' ? `<div class="sig-tools"><button class="del-btn" onclick="editSignal('${s.id}')">✎</button><button class="del-btn" onclick="removeSignal('${s.id}')">✕</button></div>` : ''}
+    </div>
+    <div class="sig-meta">${fmtTime(s.createdAt)} · ${relTime(s.createdAt)}${ME.role === 'dev' ? ' · ' + esc(s.codeLabel) : ' · oleh ' + esc(s.devName)}</div>
+    <div class="sig-levels">${lv}</div>
+    ${s.note ? `<div class="sig-note">${esc(s.note)}</div>` : ''}
+    ${actions}
+  </div>`;
+}
+
+/* ---------------- aksi dev ---------------- */
+async function setSignalStatus(id, status, result) {
+  try {
+    await API.call('PATCH', '/api/signals', { id, status, result });
+    await loadSignals(true);
+    toast2('Status signal diperbarui');
+  } catch (e) { toast2('Gagal: ' + e.message); }
+}
+async function removeSignal(id) {
+  if (!confirm('Hapus signal ini? Signal akan hilang juga dari semua user.')) return;
+  try { await API.call('DELETE', '/api/signals', { id }); await loadSignals(true); toast2('Signal dihapus'); }
+  catch (e) { toast2('Gagal: ' + e.message); }
+}
+function setSigOp(op) {
+  sigOp = op;
+  document.querySelectorAll('#signalOverlay .op-btn').forEach(b => b.classList.toggle('active', b.dataset.op === op));
+}
+function openSignalModal(id) {
+  const err = $('sigError'); err.classList.remove('show');
+  editingSignalId = id || null;
+  $('signalModalTitle').textContent = id ? 'Edit Signal' : 'Kirim Signal';
+  $('sigDeleteBtn').style.display = id ? '' : 'none';
+  const pick = $('sigCodePick');
+  pick.innerHTML = (MY_CODES || []).map(c => `<option value="${esc(c.id)}">${esc(c.label)} — ${esc(c.code)}</option>`).join('');
+  $('sigCodePickWrap').classList.toggle('hidden', !(MY_CODES && MY_CODES.length > 1));
+  const s = id ? SIGNALS.find(x => x.id === id) : null;
+  $('sigPair').value = s ? s.pair : '';
+  $('sigEntry').value = s && s.entry != null ? s.entry : '';
+  $('sigSl').value = s && s.sl != null ? s.sl : '';
+  $('sigTp1').value = s && s.tp1 != null ? s.tp1 : '';
+  $('sigTp2').value = s && s.tp2 != null ? s.tp2 : '';
+  $('sigTp3').value = s && s.tp3 != null ? s.tp3 : '';
+  $('sigTf').value = s ? (s.timeframe || '') : '';
+  $('sigNote').value = s ? (s.note || '') : '';
+  setSigOp(s ? (s.side === 'Sell' ? 'Sell' : 'Buy') : 'Buy');
+  if (s && s.codeId) pick.value = s.codeId;
+  $('signalOverlay').classList.add('open');
+}
+function closeSignalModal() { $('signalOverlay').classList.remove('open'); editingSignalId = null; }
+async function submitSignal() {
+  const err = $('sigError'); err.classList.remove('show');
+  const pair = ($('sigPair').value || '').trim().toUpperCase();
+  if (!pair) { err.textContent = 'Pair wajib diisi.'; err.classList.add('show'); return; }
+  const num = v => { const x = $('sig' + v).value; return x === '' ? null : Number(x); };
+  const payload = {
+    pair, side: sigOp, entry: num('Entry'), sl: num('Sl'), tp1: num('Tp1'), tp2: num('Tp2'), tp3: num('Tp3'),
+    timeframe: ($('sigTf').value || '').trim(), note: ($('sigNote').value || '').trim()
+  };
+  if (editingSignalId) payload.id = editingSignalId;
+  if (!editingSignalId && MY_CODES && MY_CODES.length) payload.codeId = $('sigCodePick').value;
+  try {
+    await API.call(editingSignalId ? 'PATCH' : 'POST', '/api/signals', payload);
+    closeSignalModal();
+    await loadSignals(true);
+    toast2(editingSignalId ? 'Signal diperbarui' : 'Signal terkirim ke user');
+  } catch (e) { err.textContent = e.message; err.classList.add('show'); }
+}
+function editSignal(id) { openSignalModal(id); }
+
+/* ---------------- aksi user ---------------- */
+function signalToJournal(id) {
+  const s = SIGNALS.find(x => x.id === id);
+  if (!s) return;
+  if (window.journalFromSignal) window.journalFromSignal(s);
+}
+
+/* ---------------- filter ---------------- */
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#sigFilter button').forEach(b => {
+    b.addEventListener('click', () => {
+      sigFilter = b.dataset.s;
+      document.querySelectorAll('#sigFilter button').forEach(x => x.classList.toggle('active', x === b));
+      loadSignals();
+    });
+  });
+});
+
+</script>
+<script>
+/* js/community.js */
+/* ===== TradeHub — kode komunitas (Dev) & koneksi signal (User) ===== */
+async function renderCommunity() {
+  const box = $('communityBody');
+  if (!ME) { box.innerHTML = '<div class="empty-note">Silakan masuk terlebih dahulu.</div>'; return; }
+  box.innerHTML = '<div class="empty-note">Memuat…</div>';
+  try {
+    await refreshMe();
+    if (ME.role === 'dev') await renderDevCommunity(box);
+    else await renderUserCommunity(box);
+  } catch (e) {
+    box.innerHTML = '<div class="empty-note">Gagal memuat: ' + esc(e.message) + '</div>';
+  }
+}
+
+/* ---------------- sisi Dev ---------------- */
+async function renderDevCommunity(box) {
+  const d = await API.call('GET', '/api/codes');
+  const codes = d.codes || [];
+  const cards = codes.length ? codes.map(c => `
+    <div class="code-card">
+      <div class="code-head">
+        <span class="code-name">${esc(c.label)}</span>
+        <span class="code-state ${c.active ? 'on' : ''}">${c.active ? 'Aktif' : 'Nonaktif'}</span>
+      </div>
+      <div class="code-value" onclick="copyText('${esc(c.code)}','Kode')" title="Klik untuk menyalin">${esc(c.code)}</div>
+      <div class="code-sub">${c.members} member terhubung · dibuat ${fmtTime(c.createdAt)}</div>
+      <div class="sig-actions">
+        <button class="chip" onclick="copyText('${esc(c.code)}','Kode')">Salin kode</button>
+        <button class="chip" onclick="toggleCode('${esc(c.id)}')">${c.active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+        <button class="chip ghost" onclick="regenCode('${esc(c.id)}')">Buat kode baru</button>
+        ${codes.length > 1 ? `<button class="chip danger" onclick="deleteCode('${esc(c.id)}')">Hapus</button>` : ''}
+      </div>
+    </div>`).join('') : '<div class="empty-note">Belum ada kode. Buat satu agar user bisa terhubung.</div>';
+
+  const members = (MEMBERS || []).length
+    ? (MEMBERS || []).map(m => `<div class="member-row"><div class="who">${esc(m.username)}<small>${m.role === 'dev' ? 'Dev' : 'User'} · gabung ${fmtTime(m.joinedAt || m.createdAt || Date.now())}</small></div></div>`).join('')
+    : '<div class="empty-note">Belum ada member. Bagikan kode Anda ke trader lain.</div>';
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="hist-title">Kode komunitas Anda</div>
+      <div class="code-sub" style="margin-bottom:12px">Kode ini dipakai user untuk terhubung dan menerima signal Anda. Maksimal 5 kode.</div>
+      ${cards}
+      <div class="join-row">
+        <input id="newCodeLabel" placeholder="Nama kode, misal: VIP Group" autocomplete="off">
+        <button class="btn solid" style="flex:none;padding:12px 16px" onclick="createCode()">Buat</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="hist-title">Member terhubung (${(MEMBERS || []).length})</div>
+      ${members}
+    </div>`;
+}
+
+async function createCode() {
+  const label = ($('newCodeLabel').value || '').trim();
+  try {
+    await API.call('POST', '/api/codes', { label });
+    await renderCommunity();
+    toast2('Kode baru dibuat');
+  } catch (e) { toast2('Gagal: ' + e.message); }
+}
+async function toggleCode(id) {
+  try { await API.call('POST', '/api/codes/toggle', { id }); await renderCommunity(); toast2('Status kode diubah'); }
+  catch (e) { toast2('Gagal: ' + e.message); }
+}
+async function regenCode(id) {
+  if (!confirm('Buat kode baru? Kode lama tidak bisa dipakai lagi oleh user.')) return;
+  try { await API.call('POST', '/api/codes/regen', { id }); await renderCommunity(); toast2('Kode diperbarui'); }
+  catch (e) { toast2('Gagal: ' + e.message); }
+}
+async function deleteCode(id) {
+  if (!confirm('Hapus kode ini? Member yang memakainya akan dipindah/hilang koneksinya.')) return;
+  try { await API.call('DELETE', '/api/codes', { id }); await renderCommunity(); toast2('Kode dihapus'); }
+  catch (e) { toast2('Gagal: ' + e.message); }
+}
+
+/* ---------------- sisi User ---------------- */
+async function renderUserCommunity(box) {
+  const cur = CODE ? `
+    <div class="code-card">
+      <div class="code-head">
+        <span class="code-name">${esc(CODE.label)}</span>
+        <span class="code-state on">Terhubung</span>
+      </div>
+      <div class="code-value" onclick="copyText('${esc(CODE.code)}','Kode')" title="Klik untuk menyalin">${esc(CODE.code)}</div>
+      <div class="code-sub">Dev: ${esc(CODE.devName)} · ${CODE.members} member · ${CODE.active ? 'kode aktif' : 'kode nonaktif'}</div>
+      <div class="sig-actions">
+        <button class="chip" onclick="copyText('${esc(CODE.code)}','Kode')">Salin kode</button>
+        <button class="chip danger" onclick="leaveCode()">Putuskan koneksi</button>
+      </div>
+    </div>` : `
+    <div class="code-card">
+      <div class="code-head"><span class="code-name">Belum terhubung</span><span class="code-state">—</span></div>
+      <div class="code-sub" style="margin-top:10px">Masukkan kode dari Dev Anda di bawah ini. Setelah terhubung, semua signal dari Dev tersebut akan muncul di menu Signal.</div>
+    </div>`;
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="hist-title">Koneksi signal</div>
+      ${cur}
+    </div>
+    <div class="card">
+      <div class="hist-title">${CODE ? 'Ganti kode komunitas' : 'Masukkan kode komunitas'}</div>
+      <div class="join-row">
+        <input id="joinCode" placeholder="Contoh: ABCD2-XY9K" autocomplete="off" spellcheck="false">
+        <button class="btn solid" style="flex:none;padding:12px 16px" onclick="joinCode()">Hubungkan</button>
+      </div>
+      <div class="role-hint warn" id="joinCodeErr"></div>
+      <div class="code-sub" style="margin-top:10px">Kode dibuat oleh Dev. Satu akun hanya bisa terhubung ke satu komunitas pada satu waktu.</div>
+    </div>`;
+}
+
+async function joinCode() {
+  const el = $('joinCode');
+  const v = (el.value || '').trim();
+  const err = $('joinCodeErr');
+  err.textContent = '';
+  if (!v) { err.textContent = 'Kode wajib diisi.'; return; }
+  try {
+    const d = await API.call('POST', '/api/join', { code: v });
+    CODE = d.code;
+    el.value = '';
+    toast2('Terhubung ke ' + (d.code ? d.code.label : 'komunitas'));
+    await renderCommunity();
+    loadSignals(true);
+  } catch (e) { err.textContent = e.message; }
+}
+async function leaveCode() {
+  if (!confirm('Putuskan koneksi dari komunitas ini? Signal tidak akan masuk lagi.')) return;
+  try {
+    await API.call('POST', '/api/leave', {});
+    CODE = null;
+    toast2('Koneksi diputus');
+    await renderCommunity();
+    loadSignals(true);
+  } catch (e) { toast2('Gagal: ' + e.message); }
+}
+
+</script>
+<script>boot();</script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4ffd8ed18bb5c61',t:'MTc5MjkxNjkwMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
