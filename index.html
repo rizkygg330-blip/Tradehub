@@ -207,6 +207,10 @@ svg#progressChart{height:auto;aspect-ratio:340/150;touch-action:pan-y}
 .fab.fab-hide{transform:translateY(calc(100% + 40px))}
 @media(min-width:760px){.fab{left:calc(50% - 500px + 18px)}}
 
+/* ---------- hint pips pada form signal ---------- */
+.sig-pips-hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6;font-family:ui-monospace,monospace;word-break:break-word}
+.sig-pips-hint b{color:var(--fg)}
+
 </style>
 <style>
 /* css/app.css */
@@ -688,12 +692,21 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
       <button type="button" class="op-btn active" data-op="Buy" onclick="setSigOp('Buy')">BUY</button>
       <button type="button" class="op-btn" data-op="Sell" onclick="setSigOp('Sell')">SELL</button>
     </div>
-    <label>Entry</label><input type="number" id="sigEntry" step="0.00001" inputmode="decimal" placeholder="2415.50">
-    <label>Stop Loss</label><input type="number" id="sigSl" step="0.00001" inputmode="decimal" placeholder="2405.50">
+    <label>Entry (harga)</label><input type="number" id="sigEntry" step="0.00001" inputmode="decimal" placeholder="2415.50" oninput="updateSigHint()">
+    <label>Stop Loss (pips)</label><input type="number" id="sigSl" step="1" inputmode="decimal" placeholder="150" oninput="updateSigHint()">
     <div class="three-col">
-      <div><label>TP 1</label><input type="number" id="sigTp1" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
-      <div><label>TP 2</label><input type="number" id="sigTp2" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
-      <div><label>TP 3</label><input type="number" id="sigTp3" step="0.00001" inputmode="decimal" placeholder="Opsional"></div>
+      <div><label>TP 1 (pips)</label><input type="number" id="sigTp1" step="1" inputmode="decimal" placeholder="-" oninput="updateSigHint()"></div>
+      <div><label>TP 2 (pips)</label><input type="number" id="sigTp2" step="1" inputmode="decimal" placeholder="-" oninput="updateSigHint()"></div>
+      <div><label>TP 3 (pips)</label><input type="number" id="sigTp3" step="1" inputmode="decimal" placeholder="-" oninput="updateSigHint()"></div>
+    </div>
+    <div class="sig-pips-hint" id="sigPipsHint"></div>
+    <label>Foto Chart (JPG / PNG)</label>
+    <div class="photo-box">
+      <input type="file" id="sigPhotoInput" accept="image/jpeg,image/png" onchange="onSigPhotoPick(this)" style="display:none">
+      <button type="button" class="btn ghost" id="sigPhotoPickBtn" onclick="document.getElementById('sigPhotoInput').click()">📷 Pilih Foto dari Galeri</button>
+      <img id="sigPhotoPrev" class="photo-prev" alt="Pratinjau chart" style="display:none">
+      <button type="button" class="chip danger" id="sigPhotoDelBtn" onclick="clearSigPhoto()" style="display:none">✕ Hapus Foto</button>
+      <div class="photo-note" id="sigPhotoNote" style="display:none"></div>
     </div>
     <label>Reason</label><textarea id="sigNote" placeholder="Alasan entry / setup, rencana, catatan risiko..."></textarea>
     <div class="auth-error" id="sigError"></div>
@@ -836,6 +849,27 @@ function copyText(txt, label) {
     ta.remove();
   }
 }
+/* ukuran 1 pip dalam satuan harga, per jenis pair */
+function pipSizeOf(pair) {
+  const p = String(pair || '').toUpperCase();
+  if (/US30|NAS100|NDX|SPX|US500|GER40|DJ30|NQ|BTC|ETH/.test(p)) return 1;      /* indeks & kripto: 1 poin = 1 pip */
+  if (/JPY|XAU|XAG|XPT|XPD|OIL|XTI|XBR|UKOIL|USOIL/.test(p)) return 0.01;
+  if (p.length >= 6) return 0.0001;    /* EURUSD dll */
+  return 0.01;
+}
+/* kebalikan: ubah PIPS jadi HARGA.
+   kind: 'sl' atau 'tp'.
+   Buy  -> SL di BAWAH entry, TP di ATAS
+   Sell -> SL di ATAS  entry, TP di BAWAH */
+function priceFromPips(pair, entry, pips, side, kind) {
+  const e = Number(entry), v = Math.abs(Number(pips));
+  if (!isFinite(e) || !isFinite(v)) return null;
+  const buy = String(side || '').toLowerCase() !== 'sell';
+  let sign;
+  if (kind === 'tp') sign = buy ? 1 : -1;
+  else sign = buy ? -1 : 1;
+  return Math.round((e + sign * v * pipSizeOf(pair)) * 1e8) / 1e8;
+}
 /* konversi jarak harga ke pips (perkiraan umum broker) */
 function pipsBetween(pair, a, b) {
   if (a == null || b == null || a === '' || b === '') return null;
@@ -843,7 +877,7 @@ function pipsBetween(pair, a, b) {
   if (!isFinite(d) || !isFinite(Number(a)) || !isFinite(Number(b))) return null;
   const p = String(pair || '').toUpperCase();
   if (/USDT|USDC|BUSD/.test(p)) return null;              // kripto: tidak memakai satuan pips
-  if (/US30|NAS100|SPX|NDX|GER40|DJ30|US500/.test(p)) return Math.round(d * 10) / 10;   // 1 poin = 1 pip
+  if (/US30|NAS100|SPX|NDX|GER40|DJ30|US500|NQ|BTC|ETH/.test(p)) return Math.round(d * 10) / 10;   // 1 poin = 1 pip
   if (/JPY/.test(p)) return Math.round(d * 1000) / 10;                                   // pip 0.01
   if (/XAU|XAG|XPT|XPD/.test(p)) return Math.round(d * 1000) / 10;                       // pip 0.01
   if (/OIL|XTI|XBR|UKOIL|USOIL/.test(p)) return Math.round(d * 1000) / 10;               // pip 0.01
@@ -1105,7 +1139,7 @@ window.addEventListener('keydown', e => {
     return {
       id: s.id, codeId: s.code_id, devId: s.dev_id, pair: s.pair, side: s.side,
       entry: num(s.entry), sl: num(s.sl), tp1: num(s.tp1), tp2: num(s.tp2), tp3: num(s.tp3),
-      timeframe: s.timeframe, note: s.note, status: s.status, result: s.result,
+      timeframe: s.timeframe, note: s.note, photo: s.photo || '', status: s.status, result: s.result,
       createdAt: ts(s.created_at), updatedAt: ts(s.updated_at),
       codeLabel: c ? c.label : '-', devName: dev ? dev.username : '-'
     };
@@ -1305,9 +1339,17 @@ window.addEventListener('keydown', e => {
       code_id: c.id, dev_id: prof.id, pair: pair, side: body.side === 'Sell' ? 'Sell' : 'Buy',
       entry: num(body.entry), sl: num(body.sl), tp1: num(body.tp1), tp2: num(body.tp2), tp3: num(body.tp3),
       timeframe: String(body.timeframe || '').trim(), note: String(body.note || '').trim(),
+      photo: String(body.photo || ''),
       status: 'active', result: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString()
     };
-    const { data, error } = await sb.from('signals').insert(row).select().single();
+    let { data, error } = await sb.from('signals').insert(row).select().single();
+    if (error && /photo/i.test(error.message || '')) {
+      /* kolom foto belum ada di database -> simpan tanpa foto, beri tahu sekali */
+      delete row.photo;
+      const retry = await sb.from('signals').insert(row).select().single();
+      data = retry.data; error = retry.error;
+      if (!error && typeof toast2 === 'function') toast2('Foto belum didukung: jalankan tambah-kolom-foto.sql di Supabase');
+    }
     if (error) throw new Error(error.message);
     const b = await base();
     return { signal: mapSignal(data, b.codes, b.profiles) };
@@ -1319,7 +1361,7 @@ window.addEventListener('keydown', e => {
     const row = (rows || [])[0];
     if (!row) throw new Error('Signal tidak ditemukan.');
     const patch = { updated_at: new Date().toISOString() };
-    ['pair', 'side', 'entry', 'sl', 'tp1', 'tp2', 'tp3', 'timeframe', 'note', 'status', 'result'].forEach(k => {
+    ['pair', 'side', 'entry', 'sl', 'tp1', 'tp2', 'tp3', 'timeframe', 'note', 'photo', 'status', 'result'].forEach(k => {
       if (body[k] !== undefined) patch[k] = body[k];
     });
     if (body.status && body.status !== 'active') patch.result = body.result || body.status;
@@ -2392,16 +2434,22 @@ function renderSignals() {
   box.innerHTML = list.map(sigCard).join('');
 }
 
+function pipTxt(s, price) {
+  if (price == null || price === '') return '-';
+  const p = pipsBetween(s.pair, s.entry, price);
+  return (p == null) ? fmtNum(price) : (Math.round(p * 10) / 10).toLocaleString('id-ID') + ' p';
+}
+
 function sigCard(s) {
   const pair = esc((s.pair || '').toUpperCase());
   const buy = s.side !== 'Sell';
   const status = STATUS_LABEL[s.status] || 'VALID';
   const lv = [
     `<div class="lvl">ENTRY<b>${fmtNum(s.entry)}</b><small></small></div>`,
-    `<div class="lvl sl">SL<b>${fmtNum(s.sl)}</b><small>${pipsBetween(s.pair, s.entry, s.sl) != null ? pipsBetween(s.pair, s.entry, s.sl).toFixed(1) + ' p' : ''}</small></div>`,
-    `<div class="lvl tp">TP 1<b>${fmtNum(s.tp1)}</b><small>${pipsBetween(s.pair, s.entry, s.tp1) != null ? pipsBetween(s.pair, s.entry, s.tp1).toFixed(1) + ' p' : ''}</small></div>`,
-    `<div class="lvl tp">TP 2<b>${fmtNum(s.tp2)}</b><small>${pipsBetween(s.pair, s.entry, s.tp2) != null ? pipsBetween(s.pair, s.entry, s.tp2).toFixed(1) + ' p' : ''}</small></div>`,
-    `<div class="lvl tp">TP 3<b>${fmtNum(s.tp3)}</b><small>${pipsBetween(s.pair, s.entry, s.tp3) != null ? pipsBetween(s.pair, s.entry, s.tp3).toFixed(1) + ' p' : ''}</small></div>`
+    `<div class="lvl sl">SL<b>${pipTxt(s, s.sl)}</b><small>${fmtNum(s.sl)}</small></div>`,
+    `<div class="lvl tp">TP 1<b>${pipTxt(s, s.tp1)}</b><small>${fmtNum(s.tp1)}</small></div>`,
+    `<div class="lvl tp">TP 2<b>${pipTxt(s, s.tp2)}</b><small>${fmtNum(s.tp2)}</small></div>`,
+    `<div class="lvl tp">TP 3<b>${pipTxt(s, s.tp3)}</b><small>${fmtNum(s.tp3)}</small></div>`
   ].join('');
 
   let actions = '';
@@ -2433,6 +2481,7 @@ function sigCard(s) {
     </div>
     <div class="sig-meta">${fmtTime(s.createdAt)} · ${relTime(s.createdAt)}${ME.role === 'dev' ? ' · ' + esc(s.codeLabel) : ' · oleh ' + esc(s.devName)}</div>
     <div class="sig-levels">${lv}</div>
+    ${s.photo ? `<img class="chart-photo" src="${s.photo}" alt="Chart ${pair}" onclick="viewSignalPhoto('${s.id}')">` : ''}
     ${s.note ? `<div class="sig-note">${esc(s.note)}</div>` : ''}
     ${actions}
   </div>`;
@@ -2467,11 +2516,24 @@ function openSignalModal(id) {
   if (window.setSigPair) window.setSigPair(s ? s.pair : '');
   else $('sigPair').value = s ? s.pair : '';
   $('sigEntry').value = s && s.entry != null ? s.entry : '';
-  $('sigSl').value = s && s.sl != null ? s.sl : '';
-  $('sigTp1').value = s && s.tp1 != null ? s.tp1 : '';
-  $('sigTp2').value = s && s.tp2 != null ? s.tp2 : '';
-  $('sigTp3').value = s && s.tp3 != null ? s.tp3 : '';
+  /* isi entry dulu supaya konversi harga -> pips bisa dihitung */
+  $('sigEntry').value = s && s.entry != null ? s.entry : '';
+  const toPips = p => {
+    if (p == null || p === '') return '';
+    const e = (s && s.entry != null) ? Number(s.entry) : null;
+    if (e == null) return '';
+    const ps = window.pipSizeOf ? pipSizeOf((s && s.pair) || '') : 0.00001;
+    const v = Math.round((Math.abs(Number(p) - e) / ps) * 10) / 10;
+    return isFinite(v) ? v : '';
+  };
+  $('sigSl').value = s ? toPips(s.sl) : '';
+  $('sigTp1').value = s ? toPips(s.tp1) : '';
+  $('sigTp2').value = s ? toPips(s.tp2) : '';
+  $('sigTp3').value = s ? toPips(s.tp3) : '';
   $('sigNote').value = s ? (s.note || '') : '';
+  if (window.updateSigHint) updateSigHint();
+  if (s && s.photo) { window._sigPhoto = s.photo; window.showSigPhoto(s.photo); }
+  else if (window.showSigPhoto) window.showSigPhoto('');
   setSigOp(s ? (s.side === 'Sell' ? 'Sell' : 'Buy') : 'Buy');
   if (s && s.codeId) pick.value = s.codeId;
   $('signalOverlay').classList.add('open');
@@ -2492,8 +2554,107 @@ window.setSigPair = function(val){
   else if (val) { sel.value = '__other'; if (inp) inp.value = val; }
   else { sel.value = ''; if (inp) inp.value = ''; }
   window.syncSigPairOther();
+  if (window.updateSigHint) updateSigHint();
 };
-function closeSignalModal() { $('signalOverlay').classList.remove('open'); editingSignalId = null; }
+/* ---------- foto chart pada signal ---------- */
+window._sigPhoto = '';
+window.showSigPhoto = function (data) {
+  const img = $('sigPhotoPrev'), del = $('sigPhotoDelBtn'), btn = $('sigPhotoPickBtn'), note = $('sigPhotoNote');
+  if (!img) return;
+  if (data) {
+    img.src = data; img.style.display = 'block'; del.style.display = '';
+    if (btn) btn.textContent = '🔄 Ganti Foto';
+    if (note) { note.style.display = ''; note.textContent = 'Foto siap dikirim (' + Math.round((data.length * 3 / 4) / 1024) + ' KB)'; }
+  } else {
+    img.removeAttribute('src'); img.style.display = 'none'; del.style.display = 'none';
+    if (btn) btn.textContent = '📷 Pilih Foto dari Galeri';
+    if (note) { note.style.display = 'none'; note.textContent = ''; }
+  }
+};
+window.clearSigPhoto = function () {
+  window._sigPhoto = '';
+  const inp = $('sigPhotoInput'); if (inp) inp.value = '';
+  window.showSigPhoto('');
+};
+window.onSigPhotoPick = function (input) {
+  const f = input.files && input.files[0];
+  if (!f) return;
+  if (!/^image\/(jpeg|jpg|png)$/i.test(f.type)) { toast2('File harus JPG atau PNG.'); input.value = ''; return; }
+  if (f.size > 12 * 1024 * 1024) { toast2('Foto terlalu besar (maks 12 MB).'); input.value = ''; return; }
+  const fr = new FileReader();
+  fr.onload = function () {
+    const im = new Image();
+    im.onload = function () {
+      const MAX = 1280;
+      let w = im.width, h = im.height;
+      if (w > MAX || h > MAX) { if (w >= h) { h = Math.round(h * MAX / w); w = MAX; } else { w = Math.round(w * MAX / h); h = MAX; } }
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const cx = cv.getContext('2d');
+      cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h);
+      cx.drawImage(im, 0, 0, w, h);
+      const data = cv.toDataURL('image/jpeg', 0.72);
+      window._sigPhoto = data;
+      window.showSigPhoto(data);
+      toast2('Foto siap dikirim');
+    };
+    im.onerror = function () { toast2('Foto tidak bisa dibaca. Coba file lain.'); };
+    im.src = fr.result;
+  };
+  fr.onerror = function () { toast2('Gagal membaca foto.'); };
+  fr.readAsDataURL(f);
+};
+window.viewSignalPhoto = function (id) {
+  const s = SIGNALS.find(x => String(x.id) === String(id));
+  if (!s || !s.photo) return;
+  $('photoBig').src = s.photo;
+  $('photoOverlay').classList.add('open');
+};
+
+/* ---------- satuan pips untuk SL & TP (harga hanya untuk Entry) ---------- */
+window.sigUnit = function () {
+  /* arah: Buy -> SL di bawah, TP di atas. Sell -> kebalikan */
+  return sigOp === 'Sell' ? -1 : 1;
+};
+window.sigEntryPrice = function () {
+  const v = $('sigEntry').value;
+  return v === '' ? null : Number(v);
+};
+window.pipsToPrice = function (pips, kind) {
+  const e = window.sigEntryPrice();
+  if (e == null) return null;
+  return window.priceFromPips ? priceFromPips(sigPairName(), e, pips, sigOp, kind) : null;
+};
+window.priceToPips = function (price) {
+  const e = window.sigEntryPrice();
+  if (e == null || price == null || price === '') return null;
+  const d = Math.abs(Number(price) - e);
+  const ps = window.pipSizeOf ? pipSizeOf(sigPairName()) : 0.00001;
+  const p = Math.round((d / ps) * 10) / 10;
+  return isFinite(p) ? p : null;
+};
+function sigPairName() {
+  const v = ($('sigPair') && $('sigPair').value) || '';
+  if (v === '__other') return (($('sigPairOther') || {}).value || '').trim().toUpperCase();
+  return v.trim().toUpperCase();
+}
+window.updateSigHint = function () {
+  const box = $('sigPipsHint'); if (!box) return;
+  const e = window.sigEntryPrice();
+  const sl = $('sigSl').value, t1 = $('sigTp1').value, t2 = $('sigTp2').value, t3 = $('sigTp3').value;
+  if (e == null) { box.innerHTML = ''; return; }
+  const fmt = n => (n == null ? '-' : Number(n).toLocaleString('id-ID', { maximumFractionDigits: 5 }));
+  const lines = [];
+  const p2p = (v, kind) => window.priceFromPips ? priceFromPips(sigPairName(), e, Number(v), sigOp, kind) : null;
+  if (sl !== '') lines.push('SL <b>' + sl + ' p</b> → harga ' + fmt(p2p(sl, 'sl')));
+  [['TP 1', t1], ['TP 2', t2], ['TP 3', t3]].forEach(([n, v]) => { if (v !== '') lines.push(n + ' <b>' + v + ' p</b> → harga ' + fmt(p2p(v, 'tp'))); });
+  box.innerHTML = lines.length ? lines.join(' &nbsp;·&nbsp; ') : '';
+};
+
+function closeSignalModal() {
+  $('signalOverlay').classList.remove('open'); editingSignalId = null;
+  if (window.showSigPhoto) window.showSigPhoto('');
+  window._sigPhoto = '';
+}
 async function submitSignal() {
   const err = $('sigError'); err.classList.remove('show');
   const pair = (function(){
@@ -2503,9 +2664,23 @@ async function submitSignal() {
   })();
   if (!pair) { err.textContent = 'Pair wajib diisi.'; err.classList.add('show'); return; }
   const num = v => { const x = $('sig' + v).value; return x === '' ? null : Number(x); };
+  const entry = num('Entry');
+  const slP = num('Sl'), tp1P = num('Tp1'), tp2P = num('Tp2'), tp3P = num('Tp3');
+  const ada = [slP, tp1P, tp2P, tp3P].some(v => v != null);
+  if (ada && entry == null) {
+    err.textContent = 'Isi dulu harga Entry — SL & TP dihitung dari situ.';
+    err.classList.add('show'); return;
+  }
+  if (ada && (!window.priceFromPips)) {
+    err.textContent = 'Gagal menghitung harga dari pips. Muat ulang halaman.';
+    err.classList.add('show'); return;
+  }
+  const toPrice = (v, kind) => (v == null ? null : priceFromPips(pair, entry, v, sigOp, kind));
   const payload = {
-    pair, side: sigOp, entry: num('Entry'), sl: num('Sl'), tp1: num('Tp1'), tp2: num('Tp2'), tp3: num('Tp3'),
-    note: ($('sigNote').value || '').trim()
+    pair, side: sigOp, entry: entry,
+    sl: toPrice(slP, 'sl'), tp1: toPrice(tp1P, 'tp'), tp2: toPrice(tp2P, 'tp'), tp3: toPrice(tp3P, 'tp'),
+    note: ($('sigNote').value || '').trim(),
+    photo: window._sigPhoto || ''
   };
   if (editingSignalId) payload.id = editingSignalId;
   if (!editingSignalId && MY_CODES && MY_CODES.length) payload.codeId = $('sigCodePick').value;
@@ -2681,6 +2856,5 @@ async function leaveCode() {
 </script>
 <script>boot();</script>
 <div class="photo-overlay" id="photoOverlay" onclick="this.classList.remove('open')"><img id="photoBig" alt="Chart"></div>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a570d8cfbc096d04',t:'MTc5NDEwMTc4OA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a570d8cfbc096d04',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a570e65eb9d7b29b',t:'MTc5NDEwMjM0Mw=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a570e65eb9d7b29b',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
