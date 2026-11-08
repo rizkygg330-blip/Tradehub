@@ -193,6 +193,15 @@ svg#progressChart{height:auto;aspect-ratio:340/150;touch-action:pan-y}
 @media(min-width:760px){.wrap{max-width:1000px}#appMain{column-count:2;column-gap:16px}#appMain .card{break-inside:avoid}.overlay{align-items:center}.modal{border-radius:26px;max-height:90vh}}
 @media(max-width:430px){h1{font-size:24px;letter-spacing:3px}}
 
+/* ---------- upload foto chart ---------- */
+.photo-box{display:flex;flex-direction:column;gap:10px;margin-top:2px}
+.photo-prev{width:100%;border-radius:12px;border:1px solid var(--border);display:block;cursor:zoom-in}
+.photo-note{font-size:11px;color:var(--muted)}
+.chart-photo{width:100%;border-radius:12px;border:1px solid var(--border);margin-top:10px;display:block;cursor:zoom-in}
+.photo-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:999;padding:14px}
+.photo-overlay.open{display:flex}
+.photo-overlay img{max-width:100%;max-height:100%;border-radius:10px}
+
 </style>
 <style>
 /* css/app.css */
@@ -402,12 +411,36 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
       <label>Harga Entry</label><input type="number" id="entryPoint" step="0.00001" placeholder="2415.50" required>
       <label>SL (pips)</label><input type="number" id="sl" min="0" step="1" value="50" required>
 
-      <label>Sesi (otomatis dari jam, bisa diubah)</label>
+      <label>Quartal (otomatis dari tanggal, bisa diubah)</label>
       <select id="sesi">
-        <option value="">- Pilih Sesi -</option>
-        <option value="Asia">Asia</option>
-        <option value="London">London</option>
-        <option value="New York">New York</option>
+        <option value="">- Pilih Quartal -</option>
+        <option value="Q1">Q1</option>
+        <option value="Q2">Q2</option>
+        <option value="Q3">Q3</option>
+        <option value="Q4">Q4</option>
+      </select>
+
+      <label>Fase</label>
+      <select id="fase">
+        <option value="">- Pilih Fase -</option>
+        <option value="A">A</option>
+        <option value="M">M</option>
+        <option value="D">D</option>
+        <option value="X">X</option>
+      </select>
+
+      <label>Bias</label>
+      <select id="bias">
+        <option value="">- Pilih Bias -</option>
+        <option value="Bearish">Bearish</option>
+        <option value="Bullish">Bullish</option>
+      </select>
+
+      <label>Narrative</label>
+      <select id="narrative">
+        <option value="">- Pilih Narrative -</option>
+        <option value="IRL - ERL">IRL - ERL</option>
+        <option value="ERL - IRL">ERL - IRL</option>
       </select>
 
       <label>Tipe</label>
@@ -435,7 +468,6 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
         <label class="entry-head"><input type="checkbox" class="entry-check" data-i="1" checked><span>Entry 1</span></label>
         <div class="entry-body" data-i="1">
           <div class="entry-row"><div class="hasil-col"><label>Hasil</label><select class="entry-outcome" data-i="1">
-            <option value="tp">TP RR</option>
             <option value="manual">TP</option>
             <option value="sl">SL</option>
           </select></div><div class="lot-col"><label>Lot</label><div class="lot-stepper"><button type="button" class="lot-btn" data-i="1" data-d="-1" aria-label="Kurangi lot">«</button><input type="number" class="entry-lot" data-i="1" value="0.01" min="0" step="0.01" inputmode="decimal" placeholder="0.01"><button type="button" class="lot-btn" data-i="1" data-d="1" aria-label="Tambah lot">»</button></div></div></div>
@@ -449,7 +481,6 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
         <label class="entry-head"><input type="checkbox" class="entry-check" data-i="2"><span>Entry 2</span></label>
         <div class="entry-body hidden" data-i="2">
           <div class="entry-row"><div class="hasil-col"><label>Hasil</label><select class="entry-outcome" data-i="2">
-            <option value="tp">TP RR</option>
             <option value="manual">TP</option>
             <option value="sl">SL</option>
           </select></div><div class="lot-col"><label>Lot</label><div class="lot-stepper"><button type="button" class="lot-btn" data-i="2" data-d="-1" aria-label="Kurangi lot">«</button><input type="number" class="entry-lot" data-i="2" value="0.01" min="0" step="0.01" inputmode="decimal" placeholder="0.01"><button type="button" class="lot-btn" data-i="2" data-d="1" aria-label="Tambah lot">»</button></div></div></div>
@@ -463,7 +494,6 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
         <label class="entry-head"><input type="checkbox" class="entry-check" data-i="3"><span>Entry 3</span></label>
         <div class="entry-body hidden" data-i="3">
           <div class="entry-row"><div class="hasil-col"><label>Hasil</label><select class="entry-outcome" data-i="3">
-            <option value="tp">TP RR</option>
             <option value="manual">TP</option>
             <option value="sl">SL</option>
           </select></div><div class="lot-col"><label>Lot</label><div class="lot-stepper"><button type="button" class="lot-btn" data-i="3" data-d="-1" aria-label="Kurangi lot">«</button><input type="number" class="entry-lot" data-i="3" value="0.01" min="0" step="0.01" inputmode="decimal" placeholder="0.01"><button type="button" class="lot-btn" data-i="3" data-d="1" aria-label="Tambah lot">»</button></div></div></div>
@@ -476,11 +506,18 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
       <label>Reason</label>
       <div class="reason-table">
         <div class="reason-row reason-head"><span>Setup</span><span>TF</span></div>
-        <div class="reason-row"><select id="reasonSel" onchange="syncReasonOther()" style="border-right:1px solid var(--border2)"><option value="">- Pilih -</option><option value="OB #1">OB #1</option><option value="OB #2">OB #2</option><option value="OB #3">OB #3</option><option value="Fvg">Fvg</option><option value="Ifvg">Ifvg</option><option value="Bpr">Bpr</option><option value="__other">Lainnya (ketik)</option></select><select class="tf" id="reasonTf"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
+        <div class="reason-row"><select id="reasonSel" onchange="syncReasonOther()" style="border-right:1px solid var(--border2)"><option value="">- Pilih -</option><option value="OB">OB</option><option value="FVG">FVG</option><option value="IFVG">IFVG</option><option value="BPR">BPR</option><option value="OCL">OCL</option><option value="QM">QM</option><option value="SBR">SBR</option><option value="RBS">RBS</option><option value="C/V">C/V</option><option value="C/A">C/A</option><option value="__other">Lainnya (ketik)</option></select><select class="tf" id="reasonTf"><option value="">-</option><option value="M1">M1</option><option value="M5">M5</option><option value="M15">M15</option><option value="M30">M30</option><option value="H1">H1</option><option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option></select></div>
         <div class="reason-row" id="reasonOtherRow" style="display:none;grid-template-columns:1fr"><input type="text" id="reasonOther" placeholder="Ketik reason sendiri…" autocomplete="off" style="border-right:0"></div>
       </div>
       <label>Evaluasi</label><textarea id="evaluation" placeholder="Evaluasi setelah trade..."></textarea>
-      <label>Link TradingView</label><input type="url" id="tv" placeholder="https://www.tradingview.com/x/xxxxx">
+      <label>Foto Chart (JPG / PNG)</label>
+      <div class="photo-box">
+        <input type="file" id="photoInput" accept="image/jpeg,image/png" onchange="onPhotoPick(this)" style="display:none">
+        <button type="button" class="btn ghost" id="photoPickBtn" onclick="document.getElementById('photoInput').click()">📷 Pilih Foto dari Galeri</button>
+        <img id="photoPrev" class="photo-prev" alt="Pratinjau chart" style="display:none">
+        <button type="button" class="chip danger" id="photoDelBtn" onclick="clearPhoto()" style="display:none">✕ Hapus Foto</button>
+        <div class="photo-note" id="photoNote" style="display:none"></div>
+      </div>
 
       <div class="risk-out" id="riskWarn"></div>
 
@@ -1389,14 +1426,19 @@ function resetForm(){
   setOp('Buy');
   $('sl').value=50;
   $('sesi').value='';$('tipe').value='';$('emosi').value='';
+  if($('fase')) $('fase').value='';
+  if($('bias')) $('bias').value='';
+  if($('narrative')) $('narrative').value='';
+  if(typeof clearPhoto==='function') clearPhoto();
   if($('reasonSel')) $('reasonSel').value='';
   document.querySelectorAll('.tf').forEach(s=>s.value='');
   if($('reasonOther')) $('reasonOther').value='';
   if($('reasonOtherRow')) $('reasonOtherRow').style.display='none';
   document.querySelectorAll('.entry-check').forEach((c,idx)=>{c.checked=idx===0;});
   document.querySelectorAll('.entry-body').forEach((b,idx)=>{b.classList.toggle('hidden',idx!==0);});
-  document.querySelectorAll('.entry-outcome').forEach(s=>s.value='tp');
-  document.querySelectorAll('.manual-box,.be-box').forEach(b=>b.classList.add('hidden'));
+  document.querySelectorAll('.entry-outcome').forEach(s=>s.value='manual');
+  document.querySelectorAll('.manual-box').forEach(b=>b.classList.remove('hidden'));
+  document.querySelectorAll('.be-box').forEach(b=>b.classList.add('hidden'));
   [1,2,3].forEach(updateCalc);
   if(typeof refreshWarn==='function') refreshWarn();
 }
@@ -1481,7 +1523,7 @@ function updateCalc(i){
   const val=document.querySelector(`.entry-outcome[data-i="${i}"]`).value;
   const r=rawValue(i),v=r;
   let txt='';
-  if(val==='tp') txt=`TP RR = SL x ${i} = ${r.toFixed(0)} pips`;
+  if(val==='tp') txt=`TP = ${(r>=0?'+':'')+r.toFixed(0)} pips`;
   else if(val==='manual') txt=`TP = ${(r>=0?'+':'')+r.toFixed(0)} pips`;
   else if(val==='sl') txt=`SL = ${r.toFixed(0)} pips`;
   const lot=parseFloat(document.querySelector(`.entry-lot[data-i="${i}"]`).value)||0;
@@ -1533,6 +1575,10 @@ $('tradeForm').addEventListener('submit',e=>{
       lot:parseFloat(document.querySelector(`.entry-lot[data-i="${i}"]`).value)||0
     })),
     total,
+    fase:($('fase')||{}).value||'',
+    bias:($('bias')||{}).value||'',
+    narrative:($('narrative')||{}).value||'',
+    photo:window._photoData||'',
     reasons:(()=>{
       const sel=($('reasonSel')||{}).value||'';
       const lain=(($('reasonOther')||{}).value||'').trim();
@@ -1541,7 +1587,7 @@ $('tradeForm').addEventListener('submit',e=>{
       return (isian||tf)?[{isian:isian,tf:tf}]:[];
     })(),
     evaluation:$('evaluation').value.trim(),
-    tv:$('tv').value.trim(),
+    tv:'',
     plan:$('plan').value
   };
   if(editingId){trades=trades.map(x=>x.id===editingId?Object.assign({},t,{id:editingId}):x);}else trades.unshift(t);
@@ -1619,7 +1665,7 @@ function renderHistory(){
   if(fp) list=list.filter(t=>t.emosi===fp);
   if(!list.length){box.innerHTML='<div class="empty-note">Tidak ada trade yang cocok.</div>';return;}
   if(from||to||q||fp){const sm=list.reduce((a,t)=>a+tradeMoney(t),0);$('histTitle').textContent+=' · '+list.length+' trade · '+fmtMoney(sm);}
-  const outcomeNames={tp:'TP RR',manual:'TP',sl:'SL',be:'BE'};
+  const outcomeNames={tp:'TP',manual:'TP',sl:'SL',be:'BE'};
   box.innerHTML=list.map(t=>{
     const time=t.datetime.slice(11,16).replace(':','.');
     const entryLines=t.outcomes.map((o,idx)=>{
@@ -1633,11 +1679,12 @@ function renderHistory(){
         <span style="display:flex;gap:6px"><button class="del-btn" onclick="editTrade(${t.id})">✎</button><button class="del-btn" onclick="delTrade(${t.id})">✕</button></span>
       </div>
       <div class="trade-meta">${time} · entry ${esc(t.entryPoint)} · SL ${Number(t.sl)||0}p</div>
-      ${(t.sesi||t.tipe||t.emosi||t.tf)?`<div class="tag-row">${t.sesi?`<span class="tag">${esc(t.sesi)}</span>`:''}${t.tipe?`<span class="tag">${esc(t.tipe)}</span>`:''}${t.emosi?`<span class="tag">${esc(t.emosi)}</span>`:''}${t.tf?`<span class="tag">${esc(t.tf)}</span>`:''}</div>`:''}
+      ${(t.sesi||t.fase||t.bias||t.narrative||t.tipe||t.emosi||t.tf)?`<div class="tag-row">${t.sesi?`<span class="tag">${esc(t.sesi)}</span>`:''}${t.fase?`<span class="tag">Fase ${esc(t.fase)}</span>`:''}${t.bias?`<span class="tag">${esc(t.bias)}</span>`:''}${t.narrative?`<span class="tag">${esc(t.narrative)}</span>`:''}${t.tipe?`<span class="tag">${esc(t.tipe)}</span>`:''}${t.emosi?`<span class="tag">${esc(t.emosi)}</span>`:''}${t.tf?`<span class="tag">${esc(t.tf)}</span>`:''}</div>`:''}
       ${extraHtml(t)}${entryLines}
       <div class="total-line">Total: ${fmtMoney(tradeMoney(t))} (${fmtPips(t.total)})</div>
       ${t.reasons&&t.reasons.length?`<div class="field-line"><b>Reason</b>${t.reasons.map(r=>`<div class="reason-view mono">${esc(r.isian||'-')}${r.tf?` <span class="tag">${esc(r.tf)}</span>`:''}</div>`).join('')}</div>`:''}
       ${t.evaluation?`<div class="field-line"><b>Evaluasi</b>${esc(t.evaluation)}</div>`:''}
+      ${t.photo?`<img class="chart-photo" src="${t.photo}" alt="Chart ${esc(t.pair)}" onclick="viewPhoto('${t.id}')">`:''}
       ${safeUrl(t.tv)?`<a class="tv-link" href="${esc(safeUrl(t.tv))}" target="_blank" rel="noopener">Lihat di TradingView →</a>`:''}
     </div>`;
   }).join('');
@@ -1733,7 +1780,7 @@ function saveSettings(){
 }
 let editingId=null,chartUnit='pips';
 let sesiManual=false;
-function autoSesi(dt){const d=new Date(dt);if(isNaN(d)) return '';const h=d.getUTCHours();return h>=7&&h<12?'London':h>=12&&h<21?'New York':'Asia';}
+function autoSesi(dt){const d=new Date(dt);if(isNaN(d)) return '';return 'Q'+(Math.floor(d.getMonth()/3)+1);}
 $('datetime').addEventListener('input',()=>{if(!sesiManual) $('sesi').value=autoSesi($('datetime').value);});
 $('sesi').addEventListener('change',()=>{sesiManual=true;});
 function safeUrl(u){u=String(u||'').trim();return /^https?:\/\//i.test(u)?u:'';}
@@ -1778,7 +1825,7 @@ function editTrade(id){
     const chk=document.querySelector(`.entry-check[data-i="${i}"]`);
     chk.checked=!!o.used;fire(chk,'change');
     const sel=document.querySelector(`.entry-outcome[data-i="${i}"]`);
-    let res=o.result||'tp',man=o.manual||0;
+    let res=o.result||'manual',man=o.manual||0;
     if(res==='be'){res='manual';man=o.be||0;}
     sel.value=res;fire(sel,'change');
     document.querySelector(`.entry-manual[data-i="${i}"]`).value=man;
@@ -1787,7 +1834,7 @@ function editTrade(id){
   });
   (()=>{
     const r=(t.reasons||[])[0]||{};
-    const preset=['OB #1','OB #2','OB #3','Fvg','Ifvg','Bpr'];
+    const preset=['OB','FVG','IFVG','BPR','OCL','QM','SBR','RBS','C/V','C/A'];
     const isian=String(r.isian||'');
     if($('reasonSel')){
       if(preset.indexOf(isian)>=0){ $('reasonSel').value=isian; $('reasonOther').value=''; }
@@ -1797,7 +1844,12 @@ function editTrade(id){
       syncReasonOther();
     }
   })();
-  $('evaluation').value=t.evaluation||'';$('tv').value=t.tv||'';
+  $('evaluation').value=t.evaluation||'';
+  if($('fase')) $('fase').value=t.fase||'';
+  if($('bias')) $('bias').value=t.bias||'';
+  if($('narrative')) $('narrative').value=t.narrative||'';
+  if(t.photo){ window._photoData=t.photo; if(typeof showPhoto==='function') showPhoto(t.photo); }
+  else if(typeof clearPhoto==='function') clearPhoto();
 }
 ['fMode','fText','fPsi','fFrom','fTo'].forEach(id=>$(id).addEventListener('input',renderHistory));
 document.querySelectorAll('#unitTabs button').forEach(b=>b.addEventListener('click',()=>{
@@ -1914,7 +1966,8 @@ function importText(txt){
   const okT=t=>t&&Number.isFinite(t.id)&&typeof t.datetime==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(t.datetime)&&Array.isArray(t.outcomes)&&Number.isFinite(t.total)&&Number.isFinite(t.sl)&&t.outcomes.every(o=>o&&Number.isFinite(+o.lot)&&Number.isFinite(+o.manual||0)&&Number.isFinite(+o.be||0));
   const strs=x=>String(x==null?'':x);
   const norm=t=>({id:t.id,pair:strs(t.pair),datetime:t.datetime,op:t.op==='Sell'?'Sell':'Buy',entryPoint:strs(t.entryPoint),sl:+t.sl,sesi:strs(t.sesi),tipe:strs(t.tipe),emosi:strs(t.emosi),plan:strs(t.plan),
-    outcomes:t.outcomes.map(o=>({used:!!o.used,result:['tp','manual','sl','be'].includes(o.result)?o.result:'tp',manual:+o.manual||0,be:+o.be||0,lot:+o.lot})),
+    fase:strs(t.fase),bias:strs(t.bias),narrative:strs(t.narrative),photo:strs(t.photo),
+    outcomes:t.outcomes.map(o=>({used:!!o.used,result:['tp','manual','sl','be'].includes(o.result)?o.result:'manual',manual:+o.manual||0,be:+o.be||0,lot:+o.lot})),
     total:+t.total,
     reasons:(Array.isArray(t.reasons)?t.reasons:[]).filter(r=>r&&typeof r==='object').map(r=>({isian:strs(r.isian),tf:strs(r.tf)})),
     evaluation:strs(t.evaluation),tv:strs(t.tv)});
@@ -2088,6 +2141,59 @@ window.resetJournal=function(){selectedDate=null;viewDate=new Date();sumOff=0;ed
 
 /* --- jembatan ke fitur signal / komunitas --- */
 window.setJournalData=function(tr,cf){trades=Array.isArray(tr)?tr:[];cashflows=Array.isArray(cf)?cf:[];};
+/* ---------- upload foto chart (jpg/png langsung, tanpa URL) ---------- */
+window._photoData='';
+window.showPhoto=function(data){
+  const img=$('photoPrev'), del=$('photoDelBtn'), btn=$('photoPickBtn'), note=$('photoNote');
+  if(!img) return;
+  if(data){ img.src=data; img.style.display='block'; del.style.display='';
+    if(btn) btn.textContent='🔄 Ganti Foto';
+    if(note){ note.style.display=''; note.textContent='Foto tersimpan ('+Math.round((data.length*3/4)/1024)+' KB)'; }
+  } else {
+    img.removeAttribute('src'); img.style.display='none'; del.style.display='none';
+    if(btn) btn.textContent='📷 Pilih Foto dari Galeri';
+    if(note){ note.style.display='none'; note.textContent=''; }
+  }
+};
+window.clearPhoto=function(){
+  window._photoData='';
+  const inp=$('photoInput'); if(inp) inp.value='';
+  if(typeof showPhoto==='function') showPhoto('');
+};
+window.onPhotoPick=function(input){
+  const f=input.files&&input.files[0];
+  if(!f) return;
+  if(!/^image\/(jpeg|jpg|png)$/i.test(f.type)){ toast('File harus JPG atau PNG.'); input.value=''; return; }
+  if(f.size>12*1024*1024){ toast('Foto terlalu besar (maks 12 MB).'); input.value=''; return; }
+  const fr=new FileReader();
+  fr.onload=function(){
+    const im=new Image();
+    im.onload=function(){
+      const MAX=1280;
+      let w=im.width,h=im.height;
+      if(w>MAX||h>MAX){ if(w>=h){ h=Math.round(h*MAX/w); w=MAX; } else { w=Math.round(w*MAX/h); h=MAX; } }
+      const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      const cx=cv.getContext('2d');
+      cx.fillStyle='#fff'; cx.fillRect(0,0,w,h);
+      cx.drawImage(im,0,0,w,h);
+      const data=cv.toDataURL('image/jpeg',0.72);
+      window._photoData=data;
+      showPhoto(data);
+      toast('Foto siap dipakai');
+    };
+    im.onerror=function(){ toast('Foto tidak bisa dibaca. Coba file lain.'); };
+    im.src=fr.result;
+  };
+  fr.onerror=function(){ toast('Gagal membaca foto.'); };
+  fr.readAsDataURL(f);
+};
+window.viewPhoto=function(id){
+  const t=(typeof trades!=='undefined'?trades:[]).find(function(x){return String(x.id)===String(id);});
+  if(!t||!t.photo) return;
+  $('photoBig').src=t.photo;
+  $('photoOverlay').classList.add('open');
+};
+
 window.syncReasonOther=function(){
   const sel=$('reasonSel'), row=$('reasonOtherRow');
   if(!sel||!row) return;
@@ -2115,7 +2221,7 @@ window.journalFromSignal=function(sig){
     sel.value='manual';sel.dispatchEvent(new Event('change',{bubbles:true}));
     document.querySelector('.entry-manual[data-i="1"]').value=String(Math.round(tpP));
   }else{
-    sel.value='tp';sel.dispatchEvent(new Event('change',{bubbles:true}));
+    sel.value='manual';sel.dispatchEvent(new Event('change',{bubbles:true}));
   }
   $('sesi').value=autoSesi($('datetime').value);
   [1,2,3].forEach(updateCalc);
@@ -2496,5 +2602,7 @@ async function leaveCode() {
 
 </script>
 <script>boot();</script>
+<div class="photo-overlay" id="photoOverlay" onclick="this.classList.remove('open')"><img id="photoBig" alt="Chart"></div>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a570ae08ed3914a6',t:'MTc5NDEwMDAzNQ=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a570ae08ed3914a6',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
