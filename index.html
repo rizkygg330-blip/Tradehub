@@ -411,14 +411,26 @@ body{padding-top:calc(104px + env(safe-area-inset-top,0px))}
       <label>Harga Entry</label><input type="number" id="entryPoint" step="0.00001" placeholder="2415.50" required>
       <label>SL (pips)</label><input type="number" id="sl" min="0" step="1" value="50" required>
 
-      <label>Quartal (otomatis dari tanggal, bisa diubah)</label>
-      <select id="sesi">
-        <option value="">- Pilih Quartal -</option>
-        <option value="Q1">Q1</option>
-        <option value="Q2">Q2</option>
-        <option value="Q3">Q3</option>
-        <option value="Q4">Q4</option>
-      </select>
+      <div class="two-col">
+        <div><label>Quartal</label>
+          <select id="sesi">
+            <option value="">- Pilih -</option>
+            <option value="Q1">Q1</option>
+            <option value="Q2">Q2</option>
+            <option value="Q3">Q3</option>
+            <option value="Q4">Q4</option>
+          </select>
+        </div>
+        <div><label>Cycle</label>
+          <select id="cycle">
+            <option value="">- Pilih -</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Daily">Daily</option>
+            <option value="90 min">90 min</option>
+          </select>
+        </div>
+      </div>
 
       <label>Fase</label>
       <select id="fase">
@@ -1417,7 +1429,6 @@ function openModal(){
   $('overlay').classList.add('open');
   const now=new Date();
   $('datetime').value=`${localDateStr(now)}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
-  sesiManual=false;$('sesi').value=autoSesi($('datetime').value);
   refreshWarn();
 }
 function closeModal(){$('overlay').classList.remove('open');editingId=null;$('modalTitle').textContent='Tambah Trade';resetForm();}
@@ -1426,6 +1437,7 @@ function resetForm(){
   setOp('Buy');
   $('sl').value=50;
   $('sesi').value='';$('tipe').value='';$('emosi').value='';
+  if($('cycle')) $('cycle').value='';
   if($('fase')) $('fase').value='';
   if($('bias')) $('bias').value='';
   if($('narrative')) $('narrative').value='';
@@ -1575,6 +1587,7 @@ $('tradeForm').addEventListener('submit',e=>{
       lot:parseFloat(document.querySelector(`.entry-lot[data-i="${i}"]`).value)||0
     })),
     total,
+    cycle:($('cycle')||{}).value||'',
     fase:($('fase')||{}).value||'',
     bias:($('bias')||{}).value||'',
     narrative:($('narrative')||{}).value||'',
@@ -1679,7 +1692,7 @@ function renderHistory(){
         <span style="display:flex;gap:6px"><button class="del-btn" onclick="editTrade(${t.id})">✎</button><button class="del-btn" onclick="delTrade(${t.id})">✕</button></span>
       </div>
       <div class="trade-meta">${time} · entry ${esc(t.entryPoint)} · SL ${Number(t.sl)||0}p</div>
-      ${(t.sesi||t.fase||t.bias||t.narrative||t.tipe||t.emosi||t.tf)?`<div class="tag-row">${t.sesi?`<span class="tag">${esc(t.sesi)}</span>`:''}${t.fase?`<span class="tag">Fase ${esc(t.fase)}</span>`:''}${t.bias?`<span class="tag">${esc(t.bias)}</span>`:''}${t.narrative?`<span class="tag">${esc(t.narrative)}</span>`:''}${t.tipe?`<span class="tag">${esc(t.tipe)}</span>`:''}${t.emosi?`<span class="tag">${esc(t.emosi)}</span>`:''}${t.tf?`<span class="tag">${esc(t.tf)}</span>`:''}</div>`:''}
+      ${(t.sesi||t.cycle||t.fase||t.bias||t.narrative||t.tipe||t.emosi||t.tf)?`<div class="tag-row">${t.sesi?`<span class="tag">${esc(t.sesi)}</span>`:''}${t.cycle?`<span class="tag">${esc(t.cycle)}</span>`:''}${t.fase?`<span class="tag">Fase ${esc(t.fase)}</span>`:''}${t.bias?`<span class="tag">${esc(t.bias)}</span>`:''}${t.narrative?`<span class="tag">${esc(t.narrative)}</span>`:''}${t.tipe?`<span class="tag">${esc(t.tipe)}</span>`:''}${t.emosi?`<span class="tag">${esc(t.emosi)}</span>`:''}${t.tf?`<span class="tag">${esc(t.tf)}</span>`:''}</div>`:''}
       ${extraHtml(t)}${entryLines}
       <div class="total-line">Total: ${fmtMoney(tradeMoney(t))} (${fmtPips(t.total)})</div>
       ${t.reasons&&t.reasons.length?`<div class="field-line"><b>Reason</b>${t.reasons.map(r=>`<div class="reason-view mono">${esc(r.isian||'-')}${r.tf?` <span class="tag">${esc(r.tf)}</span>`:''}</div>`).join('')}</div>`:''}
@@ -1779,10 +1792,7 @@ function saveSettings(){
   refreshWarn();$('calcRisk').value=accRiskPct();updateRisk();renderAll();
 }
 let editingId=null,chartUnit='pips';
-let sesiManual=false;
-function autoSesi(dt){const d=new Date(dt);if(isNaN(d)) return '';return 'Q'+(Math.floor(d.getMonth()/3)+1);}
-$('datetime').addEventListener('input',()=>{if(!sesiManual) $('sesi').value=autoSesi($('datetime').value);});
-$('sesi').addEventListener('change',()=>{sesiManual=true;});
+function autoSesi(){return '';}
 function safeUrl(u){u=String(u||'').trim();return /^https?:\/\//i.test(u)?u:'';}
 $('fClear').addEventListener('click',()=>{$('fFrom').value='';$('fTo').value='';renderHistory();});
 let toastTimer=null,toastFn=null;
@@ -1818,7 +1828,7 @@ function editTrade(id){
   $('pair').value=t.pair||'';$('datetime').value=t.datetime||'';setOp(t.op||'Buy');
   $('entryPoint').value=t.entryPoint||'';$('sl').value=t.sl||0;
   $('sesi').value=t.sesi||'';$('tipe').value=t.tipe||'';$('emosi').value=t.emosi||'';
-  $('plan').value=t.plan||'';sesiManual=!!t.sesi;
+  $('plan').value=t.plan||'';
   const fire=(el,ev)=>el.dispatchEvent(new Event(ev,{bubbles:true}));
   [1,2,3].forEach(i=>{
     const o=(t.outcomes||[])[i-1]||{};
@@ -1845,6 +1855,7 @@ function editTrade(id){
     }
   })();
   $('evaluation').value=t.evaluation||'';
+  if($('cycle')) $('cycle').value=t.cycle||'';
   if($('fase')) $('fase').value=t.fase||'';
   if($('bias')) $('bias').value=t.bias||'';
   if($('narrative')) $('narrative').value=t.narrative||'';
@@ -1966,7 +1977,7 @@ function importText(txt){
   const okT=t=>t&&Number.isFinite(t.id)&&typeof t.datetime==='string'&&/^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(t.datetime)&&Array.isArray(t.outcomes)&&Number.isFinite(t.total)&&Number.isFinite(t.sl)&&t.outcomes.every(o=>o&&Number.isFinite(+o.lot)&&Number.isFinite(+o.manual||0)&&Number.isFinite(+o.be||0));
   const strs=x=>String(x==null?'':x);
   const norm=t=>({id:t.id,pair:strs(t.pair),datetime:t.datetime,op:t.op==='Sell'?'Sell':'Buy',entryPoint:strs(t.entryPoint),sl:+t.sl,sesi:strs(t.sesi),tipe:strs(t.tipe),emosi:strs(t.emosi),plan:strs(t.plan),
-    fase:strs(t.fase),bias:strs(t.bias),narrative:strs(t.narrative),photo:strs(t.photo),
+    cycle:strs(t.cycle),fase:strs(t.fase),bias:strs(t.bias),narrative:strs(t.narrative),photo:strs(t.photo),
     outcomes:t.outcomes.map(o=>({used:!!o.used,result:['tp','manual','sl','be'].includes(o.result)?o.result:'manual',manual:+o.manual||0,be:+o.be||0,lot:+o.lot})),
     total:+t.total,
     reasons:(Array.isArray(t.reasons)?t.reasons:[]).filter(r=>r&&typeof r==='object').map(r=>({isian:strs(r.isian),tf:strs(r.tf)})),
@@ -2223,7 +2234,6 @@ window.journalFromSignal=function(sig){
   }else{
     sel.value='manual';sel.dispatchEvent(new Event('change',{bubbles:true}));
   }
-  $('sesi').value=autoSesi($('datetime').value);
   [1,2,3].forEach(updateCalc);
   refreshWarn();
   toast('Signal dimasukkan ke form jurnal. Lengkapi lalu simpan.');
@@ -2603,6 +2613,5 @@ async function leaveCode() {
 </script>
 <script>boot();</script>
 <div class="photo-overlay" id="photoOverlay" onclick="this.classList.remove('open')"><img id="photoBig" alt="Chart"></div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a570ae08ed3914a6',t:'MTc5NDEwMDAzNQ=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a570ae08ed3914a6',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a570c0ae6d733ef7',t:'MTc5NDEwMDc5OQ=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a570c0ae6d733ef7',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
